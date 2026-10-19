@@ -1,0 +1,63 @@
+# Cấu hình trang quản trị (Decap CMS).
+# Sửa dòng "repo" thành <tài-khoản-GitHub>/<tên-repo> của bạn.
+backend:
+  name: github
+  repo: TAI-KHOAN-GITHUB/TEN-REPO
+  branch: main
+  # Nếu đăng trên Netlify thì bỏ comment 2 dòng sau (xem HUONG-DAN.md):
+  # base_url: https://api.netlify.com
+  # auth_endpoint: auth
+
+# Chạy thử trên máy: npx decap-server, rồi mở http://localhost:8000/admin/
+local_backend: true
+
+locale: vi
+media_folder: images/uploads
+public_folder: /images/uploads
+
+collections:
+  - name: san-pham
+    label: Sản phẩm
+    files:
+      - name: products
+        label: Danh sách sản phẩm
+        file: data/products.json
+        fields:
+          - label: Sản phẩm
+            name: items
+            widget: list
+            label_singular: sản phẩm
+            summary: "{{fields.name}} – {{fields.price}}"
+            fields:
+              - { label: Tên sản phẩm, name: name, widget: string }
+              - label: Danh mục
+                name: category
+                widget: select
+                options:
+                  - { label: Bàn ghế, value: ban-ghe }
+                  - { label: Giường & tủ, value: giuong-tu }
+                  - { label: Kệ & trang trí, value: ke }
+                  - { label: Đồ thờ & mỹ nghệ, value: khac }
+              - { label: Loại gỗ và kích thước, name: spec, widget: string, hint: "VD: Gỗ sồi · 160×80 cm" }
+              - { label: Giá, name: price, widget: string, hint: "VD: Từ 12.500.000đ hoặc Liên hệ" }
+              - { label: Ảnh, name: image, widget: image, required: false, hint: "Nên dùng ảnh ngang, tỉ lệ 4:3" }
+              - { label: Hiển thị trên web, name: visible, widget: boolean, default: true }
+
+  - name: thong-tin
+    label: Thông tin chung
+    files:
+      - name: site
+        label: Thông tin cửa hàng
+        file: data/site.json
+        fields:
+          - { label: Tên thương hiệu (phần chính), name: brand_main, widget: string }
+          - { label: Tên thương hiệu (phần phụ, màu nâu nhạt), name: brand_sub, widget: string, required: false }
+          - { label: Dòng nhỏ trên tiêu đề, name: hero_eyebrow, widget: string }
+          - { label: Tiêu đề lớn đầu trang, name: hero_title, widget: text, hint: "Xuống dòng để ngắt dòng" }
+          - { label: Mô tả ngắn đầu trang, name: hero_lead, widget: text }
+          - { label: Tiêu đề phần Câu chuyện, name: story_title, widget: string }
+          - { label: Nội dung phần Câu chuyện, name: story_text, widget: text, hint: "Để trống một dòng giữa các đoạn" }
+          - { label: Số điện thoại, name: phone, widget: string }
+          - { label: Số Zalo (chỉ chữ số, không dấu cách), name: zalo, widget: string }
+          - { label: Địa chỉ xưởng, name: address, widget: string }
+          - { label: Giờ mở cửa, name: hours, widget: string }
