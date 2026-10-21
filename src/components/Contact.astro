@@ -1,0 +1,114 @@
+---
+// Liên hệ: thông tin, nút gọi/nhắn, form để lại số điện thoại và bản đồ
+import Icon from './Icon.astro';
+import { CATEGORIES, contactLinks, type Site } from '../lib/data';
+
+interface Props { site: Site }
+const { site } = Astro.props;
+const links = contactLinks(site);
+---
+<div class="contact" data-reveal>
+  <div class="contact-side">
+    <div class="contact-card">
+      <ul class="contact-list">
+        <li><Icon name="pin" /><div><small>Địa chỉ</small><span>{site.address}</span></div></li>
+        <li><Icon name="phone" /><div><small>Điện thoại / Zalo</small><a href={links.tel}>{site.phone}</a></div></li>
+        {site.hours && <li><Icon name="clock" /><div><small>Giờ mở cửa</small><span>{site.hours}</span></div></li>}
+      </ul>
+    </div>
+    <div class="map" id="map" data-src={links.mapEmbed}>
+      <div class="map-empty">
+        <Icon name="pin" />
+        <p>{links.mapEmbed ? 'Đang tải bản đồ…' : 'Bản đồ Google Maps sẽ hiện ở đây khi có địa chỉ cửa hàng.'}</p>
+      </div>
+    </div>
+  </div>
+
+  <form class="form" id="contact-form" novalidate data-key={site.form_key || ''} data-phone={site.phone} data-brand={site.brand}>
+    <h3>Để lại số điện thoại, chúng tôi gọi lại</h3>
+    <input type="checkbox" name="botcheck" class="hp" tabindex="-1" autocomplete="off" aria-hidden="true">
+    <label>Họ tên<input name="name" required autocomplete="name"></label>
+    <label>Số điện thoại<input name="phone" type="tel" required autocomplete="tel" inputmode="tel"></label>
+    <label>Quan tâm đến
+      <select name="interest">
+        <option value="">Chọn nhóm sản phẩm</option>
+        {Object.values(CATEGORIES).map(label => <option>{label}</option>)}
+        <option>Khác</option>
+      </select>
+    </label>
+    <label>Nội dung<textarea name="message" rows="3" placeholder="VD: Cần bàn thờ cho phòng thờ rộng khoảng 2m, muốn xem mẫu tại cửa hàng"></textarea></label>
+    <button class="btn" type="submit">Gửi yêu cầu</button>
+    <p class="form-note" role="status"></p>
+  </form>
+</div>
+
+
+<script>
+  import { $ } from '../scripts/util';
+
+  // Bản đồ chỉ tải khi khách cuộn gần tới, để trang mở nhanh
+  const map = $('#map');
+  const src = map?.dataset.src;
+  if (map && src) {
+    const load = () => {
+      const f = document.createElement('iframe');
+      Object.assign(f, { src, title: 'Bản đồ đường đến cửa hàng', loading: 'lazy', allowFullscreen: true });
+      f.referrerPolicy = 'no-referrer-when-downgrade';
+      map.replaceChildren(f);
+    };
+    const obs = new IntersectionObserver(([e]) => { if (e.isIntersecting) { obs.disconnect(); load(); } }, { rootMargin: '400px' });
+    obs.observe(map);
+  }
+
+  // Form gửi qua Web3Forms (miễn phí), kết quả về email của cửa hàng
+  const form = $<HTMLFormElement>('#contact-form');
+  if (form) {
+    const note = $('.form-note', form)!;
+    const btn = $<HTMLButtonElement>('button[type="submit"]', form)!;
+    const field = (n: string) => form.elements.namedItem(n) as HTMLInputElement;
+    const fail = () => {
+      note.className = 'form-note err';
+      note.textContent = `Chưa gửi được yêu cầu. Vui lòng gọi ${form.dataset.phone} hoặc nhắn Zalo.`;
+    };
+    form.addEventListener('submit', async e => {
+      e.preventDefault();
+      const nameOk = field('name').value.trim().length > 0;
+      const phoneOk = /^[0-9+\s.-]{9,15}$/.test(field('phone').value.trim());
+      field('name').setAttribute('aria-invalid', String(!nameOk));
+      field('phone').setAttribute('aria-invalid', String(!phoneOk));
+      if (!nameOk || !phoneOk) {
+        note.className = 'form-note err';
+        note.textContent = 'Vui lòng nhập họ tên và số điện thoại hợp lệ.';
+        (nameOk ? field('phone') : field('name')).focus();
+        return;
+      }
+      if (!form.dataset.key) return fail();
+      btn.disabled = true;
+      btn.textContent = 'Đang gửi…';
+      note.textContent = '';
+      try {
+        const data = Object.fromEntries(new FormData(form));
+        const res = await fetch('https://api.web3forms.com/submit', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json', Accept: 'application/json' },
+          body: JSON.stringify({
+            ...data,
+            access_key: form.dataset.key,
+            subject: `Khách để lại số điện thoại – ${form.dataset.brand}`,
+            from_name: form.dataset.brand,
+          }),
+        });
+        const json = await res.json().catch(() => ({}));
+        if (!res.ok || !json.success) throw new Error(json.message || res.status);
+        note.className = 'form-note ok';
+        note.textContent = 'Đã gửi yêu cầu. Chúng tôi sẽ gọi lại cho bạn.';
+        form.reset();
+      } catch {
+        fail();
+      } finally {
+        btn.disabled = false;
+        btn.textContent = 'Gửi yêu cầu';
+      }
+    });
+  }
+</script>

@@ -1,0 +1,91 @@
+# Cấu hình trang quản trị (Decap CMS).
+# Sửa dòng "repo" thành <tài-khoản-GitHub>/<tên-repo> của bạn.
+backend:
+  name: github
+  repo: TAI-KHOAN-GITHUB/TEN-REPO
+  branch: main
+  # Nếu đăng trên Netlify thì bỏ comment 2 dòng sau (xem HUONG-DAN.md):
+  # base_url: https://api.netlify.com
+  # auth_endpoint: auth
+
+# Chạy thử trên máy: npx decap-server, rồi mở http://localhost:8000/admin/
+local_backend: true
+
+locale: vi
+media_folder: images/uploads
+public_folder: /images/uploads
+
+collections:
+  - name: san-pham
+    label: Sản phẩm
+    files:
+      - name: products
+        label: Danh sách sản phẩm
+        file: data/products.json
+        fields:
+          - label: Sản phẩm
+            name: items
+            widget: list
+            label_singular: sản phẩm
+            summary: "{{fields.name}} – {{fields.status}}"
+            fields:
+              - { label: Tên sản phẩm, name: name, widget: string }
+              - label: Danh mục
+                name: category
+                widget: select
+                options:
+                  - { label: Bàn thờ & án gian, value: ban-tho }
+                  - { label: Hoành phi, câu đối, value: hoanh-phi }
+                  - { label: Bàn ghế & sofa, value: ban-ghe }
+                  - { label: Giường, tủ & bàn trang điểm, value: giuong-tu }
+                  - { label: Tượng & mỹ nghệ, value: my-nghe }
+              - label: Tình trạng
+                name: status
+                widget: select
+                default: dat-lam
+                options:
+                  - { label: Nhận đặt làm, value: dat-lam }
+                  - { label: Có sẵn, value: co-san }
+                  - { label: Mẫu trưng bày tại cửa hàng, value: trung-bay }
+              - label: Ảnh
+                name: images
+                widget: list
+                required: false
+                field: { label: Ảnh, name: image, widget: image }
+                hint: "Ảnh đầu tiên là ảnh đại diện. Nên dùng ảnh ngang 4:3, dưới 500 KB."
+              - { label: Chất liệu, name: material, widget: string, required: false, hint: "Để trống nếu chưa muốn ghi" }
+              - { label: Kích thước, name: size, widget: string, required: false }
+              - { label: Mô tả, name: description, widget: text, required: false, hint: "Để trống một dòng giữa các đoạn" }
+              - { label: Giá, name: price, widget: string, required: false, hint: "Để trống sẽ hiện \"Liên hệ báo giá\". VD khác: Giá tham khảo từ ..." }
+              - { label: Nổi bật (chạy trên banner đầu trang), name: featured, widget: boolean, default: false, hint: "Nên chọn 3–5 sản phẩm có ảnh đẹp nhất. Ảnh đầu tiên được dùng làm ảnh banner." }
+              - { label: Hiển thị trên web, name: visible, widget: boolean, default: true }
+
+  - name: thong-tin
+    label: Thông tin chung
+    files:
+      - name: site
+        label: Thông tin cửa hàng
+        file: data/site.json
+        fields:
+          - { label: Tên thương hiệu, name: brand, widget: string }
+          - { label: Dòng mô tả dưới tên, name: tagline, widget: string, required: false }
+          - { label: Tiêu đề phần Về chúng tôi, name: story_title, widget: string }
+          - { label: Nội dung phần Về chúng tôi, name: story_text, widget: text, hint: "Để trống một dòng giữa các đoạn" }
+          - { label: Ảnh phần Về chúng tôi, name: story_image, widget: image, required: false }
+          - label: Ảnh cửa hàng & xưởng
+            name: gallery
+            widget: list
+            label_singular: ảnh
+            summary: "{{fields.caption}}"
+            hint: "Ảnh thật tại cửa hàng, xưởng. Ảnh đầu tiên hiện to nhất."
+            fields:
+              - { label: Ảnh, name: image, widget: image, required: false }
+              - { label: Chú thích, name: caption, widget: string, required: false }
+          - { label: Số điện thoại, name: phone, widget: string }
+          - { label: Số Zalo (chỉ chữ số), name: zalo, widget: string }
+          - { label: Link Messenger, name: messenger, widget: string, required: false, hint: "VD: https://m.me/ten-trang. Để trống sẽ ẩn nút Messenger." }
+          - { label: Link trang Facebook, name: facebook, widget: string, required: false }
+          - { label: Địa chỉ cửa hàng, name: address, widget: string }
+          - { label: Giờ mở cửa, name: hours, widget: string }
+          - { label: Link Google Maps (nút Chỉ đường), name: maps_url, widget: string, required: false, hint: "Mở Google Maps → tìm cửa hàng → Chia sẻ → Sao chép đường liên kết" }
+          - { label: Mã nhúng bản đồ, name: maps_embed, widget: text, required: false, hint: "Google Maps → Chia sẻ → Nhúng bản đồ → Sao chép HTML rồi dán vào đây. Để trống sẽ tự dùng địa chỉ." }

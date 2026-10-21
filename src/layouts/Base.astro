@@ -1,0 +1,79 @@
+---
+import '../styles/global.css';
+import Icons from '../components/Icons.astro';
+import Header from '../components/Header.astro';
+import Footer from '../components/Footer.astro';
+import ContactDock from '../components/ContactDock.astro';
+import { getSite, isPlaceholder, digits } from '../lib/data';
+
+interface Props {
+  title?: string;
+  description?: string;
+  image?: string;
+  type?: 'website' | 'product';
+}
+const site = await getSite();
+const { title, description, image, type = 'website' } = Astro.props;
+const fullTitle = title ? `${title} | ${site.brand}` : `${site.brand} – Đồ gỗ, nội thất & đồ thờ`;
+const desc = description || site.intro_text;
+const canonical = new URL(Astro.url.pathname, Astro.site);
+const ogImage = new URL(image || '/og-default.jpg', Astro.site).href;
+
+// Dữ liệu cho Google: chỉ đưa vào những thông tin đã điền thật
+const localBusiness = {
+  '@context': 'https://schema.org',
+  '@type': 'FurnitureStore',
+  name: site.brand,
+  url: Astro.site?.href,
+  logo: new URL('/icon-512.png', Astro.site).href,
+  image: new URL('/og-default.jpg', Astro.site).href,
+  description: site.intro_text,
+  telephone: digits(site.phone) || undefined,
+  address: isPlaceholder(site.address) ? undefined : site.address,
+  openingHours: isPlaceholder(site.hours) ? undefined : site.hours,
+  sameAs: [site.facebook].filter(u => u && !u.includes('TEN-TRANG')),
+};
+---
+<!doctype html>
+<html lang="vi">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>{fullTitle}</title>
+  <meta name="description" content={desc}>
+  <link rel="canonical" href={canonical}>
+  <meta property="og:type" content={type === 'product' ? 'product' : 'website'}>
+  <meta property="og:site_name" content={site.brand}>
+  <meta property="og:title" content={title || fullTitle}>
+  <meta property="og:description" content={desc}>
+  <meta property="og:url" content={canonical}>
+  <meta property="og:locale" content="vi_VN">
+  <meta property="og:image" content={ogImage}>
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="theme-color" content="#3b2616">
+  <link rel="icon" href="/favicon.ico" sizes="48x48">
+  <link rel="icon" href="/favicon.png" type="image/png">
+  <link rel="apple-touch-icon" href="/apple-touch-icon.png">
+  <link rel="manifest" href="/site.webmanifest">
+  <link rel="sitemap" href="/sitemap-index.xml">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;500;600&family=Playfair+Display:wght@500;600;700&display=swap" rel="stylesheet">
+  <script is:inline>document.documentElement.classList.add('js');</script>
+  <script type="application/ld+json" set:html={JSON.stringify(localBusiness)} />
+  <slot name="head" />
+</head>
+<body>
+  <Icons />
+  <a class="skip-link" href="#main">Bỏ qua, đến nội dung chính</a>
+  <Header site={site} />
+  <main id="main">
+    <slot />
+  </main>
+  <Footer site={site} />
+  <ContactDock site={site} />
+  <script>
+    import '../scripts/ui';
+  </script>
+</body>
+</html>

@@ -1,0 +1,24 @@
+---
+// Nút liên hệ nổi (máy tính) và thanh liên hệ cố định (điện thoại)
+import Icon from './Icon.astro';
+import { contactLinks, type Site } from '../lib/data';
+
+interface Props { site: Site }
+const links = contactLinks(Astro.props.site);
+---
+<div class="fab" id="fab">
+  <button class="fab-top" id="to-top" type="button" aria-label="Lên đầu trang"><Icon name="up" /></button>
+  <a href={links.tel} class="fab-btn fab-call" aria-label={`Gọi ${Astro.props.site.phone}`} data-tip={`Gọi ${Astro.props.site.phone}`}><Icon name="phone" /></a>
+  <a href={links.zalo} class="fab-btn fab-zalo" target="_blank" rel="noopener" aria-label="Nhắn Zalo" data-tip="Nhắn Zalo"><Icon name="zalo" class="ic-zalo" /></a>
+  {links.messenger && <a href={links.messenger} class="fab-btn fab-messenger" target="_blank" rel="noopener" aria-label="Nhắn Messenger" data-tip="Messenger"><Icon name="messenger" /></a>}
+  <a href={links.directions} class="fab-btn fab-map" target="_blank" rel="noopener" aria-label="Chỉ đường đến cửa hàng" data-tip="Chỉ đường"><Icon name="direction" /></a>
+</div>
+
+<nav class="mobile-bar" aria-label="Liên hệ nhanh">
+  <a href={links.tel}><Icon name="phone" />Gọi</a>
+  <a href={links.zalo} target="_blank" rel="noopener"><Icon name="zalo" class="ic-zalo" />Zalo</a>
+  {links.messenger && <a href={links.messenger} target="_blank" rel="noopener"><Icon name="messenger" />Messenger</a>}
+  <a href={links.directions} target="_blank" rel="noopener"><Icon name="direction" />Chỉ đường</a>
+</nav>
+
+<div class="toast" id="toast" role="status" aria-live="polite"></div>

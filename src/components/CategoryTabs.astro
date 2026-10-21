@@ -1,0 +1,28 @@
+---
+// Hàng nút chọn danh mục (dùng ở trang chủ và trang danh sách)
+import { getImage } from 'astro:assets';
+import Icon from './Icon.astro';
+import { CATEGORIES, CATEGORY_SHORT, type Category, type Product } from '../lib/data';
+
+interface Props { products: Product[] }
+const { products } = Astro.props;
+const PH = [4, 2, 1, 5, 6];
+
+// Ảnh nhỏ trên nút: ảnh đầu tiên có trong danh mục đó
+const tabs = await Promise.all((Object.keys(CATEGORIES) as Category[]).map(async (key, i) => {
+  const first = products.find(p => p.data.category === key && p.data.images[0]);
+  const thumb = first ? await getImage({ src: first.data.images[0], width: 96, height: 96, fit: 'cover' }) : null;
+  return { key, label: CATEGORY_SHORT[key], title: CATEGORIES[key], thumb: thumb?.src, ph: PH[i], count: products.filter(p => p.data.category === key).length };
+}));
+---
+<div class="cat-tabs" role="group" aria-label="Lọc theo danh mục">
+  <button class="cat-tab" type="button" data-cat="all" aria-pressed="true">
+    <span class="cat-thumb"><Icon name="grid" /></span><span class="cat-name">Tất cả</span><span class="cat-count">{products.length}</span>
+  </button>
+  {tabs.map(t => (
+    <button class="cat-tab" type="button" data-cat={t.key} aria-pressed="false" title={t.title}>
+      {t.thumb ? <img class="cat-thumb" src={t.thumb} alt="" width="48" height="48" loading="lazy" /> : <span class={`cat-thumb ph ph-${t.ph}`}></span>}
+      <span class="cat-name">{t.label}</span><span class="cat-count">{t.count}</span>
+    </button>
+  ))}
+</div>

@@ -1,0 +1,20 @@
+---
+// Ảnh thật (tự nén, nhiều kích thước) hoặc khối màu gỗ giữ chỗ khi chưa có ảnh
+import { Image } from 'astro:assets';
+import type { ImageMetadata } from 'astro';
+
+interface Props {
+  src?: ImageMetadata | null;
+  alt?: string;
+  ph?: number | string;
+  widths?: number[];
+  sizes?: string;
+  class?: string;
+  priority?: boolean;
+  [key: string]: unknown;
+}
+const { src, alt = '', ph = 1, widths = [400, 800, 1200], sizes = '(max-width: 720px) 50vw, 33vw', class: cls, priority = false, ...rest } = Astro.props;
+---
+{src
+  ? <Image src={src} alt={alt} widths={widths.filter(w => w <= src.width)} sizes={sizes} class={cls} priority={priority} {...rest} />
+  : <span class:list={['ph', `ph-${ph}`, cls]} role={alt ? 'img' : undefined} aria-label={alt || undefined} {...rest}></span>}

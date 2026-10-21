@@ -1,0 +1,44 @@
+{
+  "brand": "Doanh Tuyết",
+  "tagline": "Đồ gỗ mỹ nghệ",
+  "intro_title": "Đồ gỗ cho ngôi nhà và nơi thờ tự của gia đình",
+  "intro_text": "Bàn thờ, hoành phi câu đối, bàn ghế, giường tủ và đồ mỹ nghệ. Nhận đặt làm theo kích thước, chất liệu và yêu cầu riêng.",
+  "story_title": "Cơ sở đồ gỗ mang tên bố mẹ",
+  "story_text": "Doanh Tuyết là cửa hàng và xưởng đồ gỗ của gia đình, do chính bố mẹ chúng tôi trực tiếp tư vấn, nhận đặt làm và theo sát từng sản phẩm.\n\n[Phần này để gia đình bổ sung: cửa hàng bắt đầu từ khi nào, kinh nghiệm của xưởng, điều gia đình tâm đắc nhất khi làm nghề.]",
+  "story_image": "../../assets/site/vi-du-xuong.webp",
+  "gallery": [
+    {
+      "image": "../../assets/site/vi-du-phong-khach.webp",
+      "caption": "Không gian cửa hàng"
+    },
+    {
+      "image": "../../assets/site/vi-du-xuong.webp",
+      "caption": "Xưởng sản xuất"
+    },
+    {
+      "image": "../../assets/site/vi-du-tu-tho.webp",
+      "caption": "Mẫu trưng bày"
+    },
+    {
+      "image": "../../assets/site/vi-du-cham-khac.webp",
+      "caption": "Chi tiết chạm khắc"
+    },
+    {
+      "image": "../../assets/site/vi-du-ban-ngan-keo.webp",
+      "caption": "Hoàn thiện sản phẩm"
+    },
+    {
+      "image": "../../assets/site/vi-du-tu-go.webp",
+      "caption": "Sản phẩm trước khi giao"
+    }
+  ],
+  "phone": "0900 000 000",
+  "zalo": "0900000000",
+  "messenger": "https://m.me/TEN-TRANG-FACEBOOK",
+  "facebook": "https://www.facebook.com/TEN-TRANG-FACEBOOK",
+  "address": "[Số nhà, đường, xã/phường, tỉnh/thành – cần bổ sung]",
+  "hours": "[Giờ mở cửa – cần bổ sung]",
+  "maps_url": "",
+  "maps_embed": "",
+  "form_key": ""
+}

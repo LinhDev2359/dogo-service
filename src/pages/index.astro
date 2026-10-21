@@ -1,0 +1,79 @@
+---
+import Base from '../layouts/Base.astro';
+import Hero from '../components/Hero.astro';
+import FeaturedStrip from '../components/FeaturedStrip.astro';
+import HomeProducts from '../components/HomeProducts.astro';
+import Gallery from '../components/Gallery.astro';
+import Contact from '../components/Contact.astro';
+import Media from '../components/Media.astro';
+import { getProducts, getSite, paragraphs } from '../lib/data';
+
+const site = await getSite();
+const products = await getProducts();
+---
+<Base>
+  <Hero products={products} site={site} />
+
+  <section class="highlights" aria-label="Điểm nổi bật">
+    <div class="container highlights-grid">
+      <div><strong>Cửa hàng &amp; xưởng thực tế</strong><span>Đến tận nơi xem mẫu và chất gỗ</span></div>
+      <div><strong>Nhận đặt làm theo yêu cầu</strong><span>Theo kích thước, kiểu dáng gia đình cần</span></div>
+      <div><strong>Báo giá theo từng mẫu</strong><span>Tùy kích thước, chất liệu và chi tiết</span></div>
+      <div><strong>Tư vấn trực tiếp</strong><span>Gọi điện, Zalo hoặc Messenger</span></div>
+    </div>
+  </section>
+
+  <FeaturedStrip products={products} />
+
+  <HomeProducts products={products} site={site} />
+
+  <section id="ve-chung-toi" class="section">
+    <div class="container story">
+      <div class="story-media" data-reveal>
+        <Media src={site.story_image} alt={`Cửa hàng ${site.brand}`} ph={7} sizes="(max-width: 960px) 100vw, 50vw" />
+      </div>
+      <div data-reveal>
+        <p class="eyebrow">Về {site.brand}</p>
+        <h2>{site.story_title}</h2>
+        <div class="story-text">{paragraphs(site.story_text).map(t => <p>{t}</p>)}</div>
+        <a href="#xuong" class="link-arrow">Xem cửa hàng &amp; xưởng →</a>
+      </div>
+    </div>
+  </section>
+
+  <section id="xuong" class="section alt">
+    <div class="container">
+      <div class="section-head" data-reveal>
+        <p class="eyebrow">Cửa hàng &amp; xưởng</p>
+        <h2>Nơi làm ra từng sản phẩm</h2>
+        <p class="section-sub">Ảnh thật tại cửa hàng và xưởng. Bấm vào ảnh để xem lớn.</p>
+      </div>
+      <Gallery site={site} />
+    </div>
+  </section>
+
+  <section id="quy-trinh" class="section">
+    <div class="container">
+      <div class="section-head" data-reveal>
+        <p class="eyebrow">Đặt làm</p>
+        <h2>Quy trình đặt làm</h2>
+      </div>
+      <ol class="steps" data-stagger>
+        <li data-reveal><span class="step-num">1</span><b>Tư vấn</b><span>Gọi, nhắn Zalo hoặc đến cửa hàng. Gửi ảnh mẫu, kích thước chỗ đặt nếu có.</span></li>
+        <li data-reveal><span class="step-num">2</span><b>Thống nhất &amp; báo giá</b><span>Chọn kiểu dáng, chất liệu, kích thước. Báo giá theo đúng phương án đã chọn.</span></li>
+        <li data-reveal><span class="step-num">3</span><b>Sản xuất</b><span>Xưởng làm theo phương án đã thống nhất.</span></li>
+        <li data-reveal><span class="step-num">4</span><b>Hoàn thiện &amp; giao</b><span>Kiểm tra, hoàn thiện và giao hoặc khách đến nhận tại cửa hàng.</span></li>
+      </ol>
+    </div>
+  </section>
+
+  <section id="lien-he" class="section alt">
+    <div class="container">
+      <div class="section-head" data-reveal>
+        <p class="eyebrow">Liên hệ</p>
+        <h2>Ghé cửa hàng hoặc nhắn cho chúng tôi</h2>
+      </div>
+      <Contact site={site} />
+    </div>
+  </section>
+</Base>
