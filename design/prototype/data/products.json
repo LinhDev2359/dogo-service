@@ -1,0 +1,14 @@
+{
+  "items": [
+    {"name": "Mẫu bàn thờ án gian", "category": "ban-tho", "status": "dat-lam", "images": [], "material": "", "size": "", "description": "", "price": "", "featured": true, "visible": true},
+    {"name": "Mẫu bàn thờ treo tường", "category": "ban-tho", "status": "trung-bay", "images": [], "material": "", "size": "", "description": "", "price": "", "featured": false, "visible": true},
+    {"name": "Mẫu hoành phi", "category": "hoanh-phi", "status": "dat-lam", "images": [], "material": "", "size": "", "description": "", "price": "", "featured": true, "visible": true},
+    {"name": "Mẫu câu đối", "category": "hoanh-phi", "status": "dat-lam", "images": [], "material": "", "size": "", "description": "", "price": "", "featured": false, "visible": true},
+    {"name": "Mẫu bộ bàn ghế phòng khách", "category": "ban-ghe", "status": "co-san", "images": [], "material": "", "size": "", "description": "", "price": "", "featured": true, "visible": true},
+    {"name": "Mẫu sofa gỗ", "category": "ban-ghe", "status": "dat-lam", "images": [], "material": "", "size": "", "description": "", "price": "", "featured": false, "visible": true},
+    {"name": "Mẫu tủ quần áo", "category": "giuong-tu", "status": "dat-lam", "images": [], "material": "", "size": "", "description": "", "price": "", "featured": true, "visible": true},
+    {"name": "Mẫu giường ngủ", "category": "giuong-tu", "status": "dat-lam", "images": [], "material": "", "size": "", "description": "", "price": "", "featured": false, "visible": true},
+    {"name": "Mẫu bàn trang điểm", "category": "giuong-tu", "status": "co-san", "images": [], "material": "", "size": "", "description": "", "price": "", "featured": false, "visible": true},
+    {"name": "Mẫu tượng gỗ", "category": "my-nghe", "status": "trung-bay", "images": [], "material": "", "size": "", "description": "", "price": "", "featured": false, "visible": true}
+  ]
+}

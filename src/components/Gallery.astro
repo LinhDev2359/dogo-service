@@ -1,0 +1,64 @@
+---
+// Ảnh cửa hàng & xưởng, bấm để xem lớn
+import Icon from './Icon.astro';
+import Media from './Media.astro';
+import type { Site } from '../lib/data';
+
+interface Props { site: Site }
+const DEFAULT = ['Không gian cửa hàng', 'Xưởng sản xuất', 'Mẫu trưng bày', 'Chi tiết chạm khắc', 'Hoàn thiện sản phẩm', 'Sản phẩm trước khi giao']
+  .map(caption => ({ caption, image: null }));
+const items = Astro.props.site.gallery.filter(g => g.image || g.caption);
+const gallery = items.length ? items : DEFAULT;
+---
+<div class="gallery" data-stagger>
+  {gallery.map((g, i) => (
+    <button type="button" class="gallery-item" data-reveal data-index={i} aria-label={`Xem ảnh lớn: ${g.caption || 'ảnh ' + (i + 1)}`}>
+      <Media src={g.image} ph={(i % 7) + 1} sizes={i === 0 ? '(max-width: 720px) 100vw, 66vw' : '(max-width: 720px) 50vw, 33vw'} />
+      {g.caption && <span class="gallery-cap">{g.caption}</span>}
+    </button>
+  ))}
+</div>
+
+<dialog class="lightbox" id="lightbox" aria-label="Xem ảnh">
+  <button class="modal-close" type="button" data-close aria-label="Đóng"><Icon name="close" /></button>
+  <figure class="lb-figure" data-backdrop>
+    <div class="lb-stage" data-backdrop>
+      {gallery.map((g, i) => (
+        <div class="lb-item" hidden data-backdrop data-caption={g.caption || ''}>
+          <Media src={g.image} ph={(i % 7) + 1} widths={[800, 1600]} sizes="90vw" />
+        </div>
+      ))}
+    </div>
+    <figcaption data-backdrop></figcaption>
+  </figure>
+  <button class="pm-nav pm-prev" type="button" aria-label="Ảnh trước"><Icon name="left" /></button>
+  <button class="pm-nav pm-next" type="button" aria-label="Ảnh tiếp theo"><Icon name="right" /></button>
+</dialog>
+
+<script>
+  import { $, $$, addSwipe, openDialog, wireDialog } from '../scripts/util';
+
+  const box = $<HTMLDialogElement>('#lightbox');
+  if (box) {
+    const items = $$('.lb-item', box);
+    const caption = $('figcaption', box)!;
+    let index = 0;
+    const show = (i: number) => {
+      index = (i + items.length) % items.length;
+      items.forEach((it, j) => (it.hidden = j !== index));
+      caption.textContent = items[index].dataset.caption || '';
+    };
+    wireDialog(box);
+    $$('.gallery-item').forEach(b => b.addEventListener('click', () => {
+      show(Number(b.dataset.index));
+      openDialog(box);
+    }));
+    $('.pm-prev', box)!.addEventListener('click', () => show(index - 1));
+    $('.pm-next', box)!.addEventListener('click', () => show(index + 1));
+    addSwipe(box, dir => show(index + dir));
+    box.addEventListener('keydown', e => {
+      if (e.key === 'ArrowLeft') show(index - 1);
+      if (e.key === 'ArrowRight') show(index + 1);
+    });
+  }
+</script>

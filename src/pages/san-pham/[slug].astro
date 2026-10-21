@@ -1,0 +1,129 @@
+---
+import Base from '../../layouts/Base.astro';
+import Icon from '../../components/Icon.astro';
+import Media from '../../components/Media.astro';
+import ProductCard from '../../components/ProductCard.astro';
+import { CATEGORIES, STATUS, contactLinks, getProducts, getSite, paragraphs, type Product } from '../../lib/data';
+import { getImage } from 'astro:assets';
+
+export async function getStaticPaths() {
+  const products = await getProducts();
+  return products.map(product => ({ params: { slug: product.id }, props: { product, products } }));
+}
+
+interface Props { product: Product; products: Product[] }
+const { product: p, products } = Astro.props;
+const d = p.data;
+const site = await getSite();
+const links = contactLinks(site);
+const status = STATUS[d.status];
+const desc = paragraphs(p.body);
+const specs = [['Danh mục', CATEGORIES[d.category]], ['Chất liệu', d.material], ['Kích thước', d.size]].filter(([, v]) => v);
+// Ưu tiên mẫu cùng danh mục, thiếu thì bù mẫu khác cho đủ một hàng 4 thẻ
+const related = products.filter(r => r !== p && r.data.category === d.category).slice(0, 4);
+const more = [...related, ...products.filter(r => r !== p && !related.includes(r))].slice(0, 4);
+
+// Ảnh xem trước khi gửi link qua Zalo/Facebook
+const og = d.images[0] ? await getImage({ src: d.images[0], width: 1200, height: 630, fit: 'cover', format: 'jpeg' }) : null;
+const metaDesc = desc[0] || `${d.name} – ${status.label}. ${CATEGORIES[d.category]} tại ${site.brand}. Liên hệ để được tư vấn và báo giá.`;
+const zaloText = `Tôi muốn hỏi về mẫu: ${d.name} – ${new URL(p.url, Astro.site).href}`;
+---
+<Base title={d.name} description={metaDesc} image={og?.src} type="product">
+  <div class="container page-head">
+    <ol class="breadcrumb">
+      <li><a href="/">Trang chủ</a></li>
+      <li><a href="/san-pham/">Sản phẩm</a></li>
+      <li><a href={`/san-pham/?danh-muc=${d.category}`}>{CATEGORIES[d.category]}</a></li>
+      <li aria-current="page">{d.name}</li>
+    </ol>
+  </div>
+
+  <div class="container product">
+    <div class:list={['pm-gallery', { single: d.images.length < 2 }]}>
+      <div class="pm-stage" style={`view-transition-name: img-${p.id}`}>
+        {(d.images.length ? d.images : [null]).map((img, i) => (
+          <Media src={img} alt={`${d.name} – ảnh ${i + 1}`} ph={p.ph} class={i === 0 ? 'is-active' : ''}
+            widths={[600, 900, 1400]} sizes="(max-width: 960px) 100vw, 55vw" priority={i === 0} />
+        ))}
+      </div>
+      <button class="pm-nav pm-prev" type="button" aria-label="Ảnh trước"><Icon name="left" /></button>
+      <button class="pm-nav pm-next" type="button" aria-label="Ảnh tiếp theo"><Icon name="right" /></button>
+      {d.images.length > 1 && (
+        <div class="pm-thumbs">
+          {d.images.map((img, i) => (
+            <button type="button" aria-label={`Xem ảnh ${i + 1}`} aria-current={i === 0 ? 'true' : 'false'}>
+              <Media src={img} widths={[160]} sizes="84px" />
+            </button>
+          ))}
+        </div>
+      )}
+    </div>
+
+    <div class="pm-info">
+      <span class:list={['badge', `badge-${d.status}`]}>{status.label}</span>
+      <p class="pm-status-note">{status.note}</p>
+      <h1>{d.name}</h1>
+      <dl class="pm-specs">{specs.map(([k, v]) => <><dt>{k}</dt><dd>{v}</dd></>)}</dl>
+      {desc.length > 0 && <div class="pm-desc">{desc.map(t => <p>{t}</p>)}</div>}
+      <p class="pm-price">{p.price}</p>
+      <p class="pm-note">Có thể làm theo kích thước, chất liệu và yêu cầu riêng của gia đình.</p>
+      <div class="pm-actions">
+        <a href={links.tel} class="btn"><Icon name="phone" />Gọi hỏi giá · {site.phone}</a>
+        <a href={links.zalo} class="btn btn-zalo" id="ask-zalo" data-text={zaloText} target="_blank" rel="noopener"><Icon name="zalo" class="ic-zalo" />Hỏi qua Zalo</a>
+        {links.messenger
+          ? <a href={links.messenger} class="btn btn-messenger" target="_blank" rel="noopener"><Icon name="messenger" />Messenger</a>
+          : <a href={links.directions} class="btn btn-outline" target="_blank" rel="noopener"><Icon name="direction" />Chỉ đường</a>}
+      </div>
+    </div>
+  </div>
+
+  {more.length > 0 && (
+    <section class="section alt related">
+      <div class="container">
+        <div class="section-head" data-reveal>
+          <p class="eyebrow">Gợi ý</p>
+          <h2>Có thể bạn quan tâm</h2>
+        </div>
+        <div class="product-grid">{more.map(r => <ProductCard product={r} />)}</div>
+      </div>
+    </section>
+  )}
+</Base>
+
+<script>
+  import { $, $$, addSwipe, toast } from '../../scripts/util';
+
+  // Xem ảnh: nút trái/phải, ảnh nhỏ, vuốt, phím mũi tên
+  const stage = $('.pm-stage');
+  const items = stage ? [...stage.children] as HTMLElement[] : [];
+  const thumbs = $$('.pm-thumbs button');
+  let index = 0;
+  function show(i: number) {
+    index = (i + items.length) % items.length;
+    items.forEach((it, j) => it.classList.toggle('is-active', j === index));
+    thumbs.forEach((t, j) => t.setAttribute('aria-current', String(j === index)));
+  }
+  if (items.length > 1) {
+    $('.pm-prev')!.addEventListener('click', () => show(index - 1));
+    $('.pm-next')!.addEventListener('click', () => show(index + 1));
+    thumbs.forEach((t, j) => t.addEventListener('click', () => show(j)));
+    addSwipe(stage!, dir => show(index + dir));
+    document.addEventListener('keydown', e => {
+      if (e.key === 'ArrowLeft') show(index - 1);
+      if (e.key === 'ArrowRight') show(index + 1);
+    });
+  }
+  // Bấm ảnh để xem toàn màn hình
+  stage?.addEventListener('click', () => {
+    const img = items[index].querySelector('img') ?? (items[index] instanceof HTMLImageElement ? items[index] : null);
+    if (img && document.fullscreenEnabled) img.requestFullscreen().catch(() => {});
+  });
+
+  // Zalo không tự điền tin nhắn được, nên sao chép sẵn tên mẫu để khách dán vào
+  const zalo = $('#ask-zalo');
+  zalo?.addEventListener('click', () => {
+    navigator.clipboard?.writeText(zalo.dataset.text || '')
+      .then(() => toast('Đã sao chép tên mẫu, hãy dán vào khung chat Zalo.'))
+      .catch(() => {});
+  });
+</script>

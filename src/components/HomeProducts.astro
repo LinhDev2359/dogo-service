@@ -1,0 +1,71 @@
+---
+// Xem nhanh sản phẩm trên trang chủ: chọn danh mục ngay tại đây, "Xem tất cả" mở trang danh sách
+import Icon from './Icon.astro';
+import CategoryTabs from './CategoryTabs.astro';
+import ProductCard from './ProductCard.astro';
+import { CATEGORIES, contactLinks, type Product, type Site } from '../lib/data';
+
+interface Props { products: Product[]; site: Site }
+const { products, site } = Astro.props;
+const SHOW = 6;
+---
+<section id="san-pham" class="section alt home-products" data-show={SHOW} data-labels={JSON.stringify(CATEGORIES)}>
+  <div class="container">
+    <div class="section-head" data-reveal>
+      <p class="eyebrow">Sản phẩm</p>
+      <h2>Xem nhanh các mẫu</h2>
+      <p class="section-sub">Phần lớn sản phẩm được làm theo đơn đặt. Nhãn trên ảnh cho biết mẫu nào đang <b>có sẵn</b> hoặc <b>trưng bày tại cửa hàng</b>.</p>
+    </div>
+    <div class="home-tabs"><CategoryTabs products={products} /></div>
+    <div class="product-grid" id="home-grid">
+      {products.map((p, i) => <div class="card-slot" hidden={i >= SHOW}><ProductCard product={p} /></div>)}
+    </div>
+    <div class="empty-state" hidden>
+      <Icon name="search" />
+      <p class="empty-title">Chưa có mẫu trên web</p>
+      <p>Cửa hàng còn nhiều mẫu chưa đăng lên web – hãy gọi hoặc nhắn Zalo để hỏi.</p>
+      <div class="empty-actions">
+        <a href={contactLinks(site).zalo} class="btn btn-zalo" target="_blank" rel="noopener"><Icon name="zalo" class="ic-zalo" />Hỏi qua Zalo</a>
+      </div>
+    </div>
+    <p class="center"><a href="/san-pham/" class="btn" id="see-all">Xem tất cả <span>{products.length}</span> mẫu →</a></p>
+  </div>
+</section>
+
+<script>
+  import { $, $$ } from '../scripts/util';
+  import { withTransition } from '../scripts/transition';
+
+  const root = $('.home-products');
+  if (root) {
+    const SHOW = Number(root.dataset.show) || 6;
+    const labels: Record<string, string> = JSON.parse(root.dataset.labels || '{}');
+    const slots = $$('.card-slot', root);
+    const tabs = $$('.cat-tab', root);
+    const seeAll = $<HTMLAnchorElement>('#see-all', root)!;
+    const empty = $('.empty-state', root)!;
+    let cat = 'all';
+
+    function update() {
+      const matched = slots.filter(s => cat === 'all' || s.querySelector<HTMLElement>('.card')?.dataset.cat === cat);
+      slots.forEach(s => {
+        const show = matched.indexOf(s) > -1 && matched.indexOf(s) < SHOW;
+        s.hidden = !show;
+        if (show) s.querySelector('.card')?.classList.add('is-visible');
+      });
+      tabs.forEach(t => t.setAttribute('aria-pressed', String(t.dataset.cat === cat)));
+      empty.hidden = matched.length > 0;
+      seeAll.hidden = matched.length === 0;
+      seeAll.href = cat === 'all' ? '/san-pham/' : `/san-pham/?danh-muc=${cat}`;
+      seeAll.textContent = cat === 'all'
+        ? `Xem tất cả ${slots.length} mẫu →`
+        : `Xem tất cả ${matched.length} mẫu ${labels[cat]?.toLowerCase() ?? ''} →`;
+    }
+
+    tabs.forEach(t => t.addEventListener('click', () => {
+      if (t.dataset.cat === cat) return;
+      cat = t.dataset.cat!;
+      withTransition(update);
+    }));
+  }
+</script>

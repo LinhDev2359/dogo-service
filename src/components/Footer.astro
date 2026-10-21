@@ -1,0 +1,48 @@
+---
+import { Image } from 'astro:assets';
+import Icon from './Icon.astro';
+import { CATEGORIES, contactLinks, type Site } from '../lib/data';
+import logoMark from '../assets/brand/logo-mark-light.png';
+import logoWord from '../assets/brand/logo-wordmark-light.png';
+
+interface Props { site: Site }
+const { site } = Astro.props;
+const links = contactLinks(site);
+---
+<footer class="site-footer">
+  <div class="container footer-grid">
+    <div class="footer-brand">
+      <a href="/" class="logo logo-light" aria-label={`${site.brand} – trang chủ`}>
+        <Image class="logo-mark" src={logoMark} alt="" height={64} densities={[1, 2]} />
+        <Image class="logo-word" src={logoWord} alt="" height={48} densities={[1, 2]} />
+      </a>
+      <p class="slogan">Tinh hoa từ gỗ – Giá trị bền lâu</p>
+      <p>Cửa hàng &amp; xưởng đồ gỗ gia đình. Nhận đặt làm theo yêu cầu.</p>
+      <div class="socials">
+        {links.facebook && <a href={links.facebook} target="_blank" rel="noopener" aria-label="Facebook"><Icon name="facebook" /></a>}
+        {links.messenger && <a href={links.messenger} target="_blank" rel="noopener" aria-label="Messenger"><Icon name="messenger" /></a>}
+        <a href={links.zalo} target="_blank" rel="noopener" aria-label="Zalo"><Icon name="zalo" class="ic-zalo" /></a>
+      </div>
+    </div>
+    <div>
+      <h2 class="footer-title">Sản phẩm</h2>
+      <ul class="footer-links">
+        {Object.entries(CATEGORIES).map(([key, label]) => (
+          <li><a href={`/san-pham/?danh-muc=${key}`} data-filter={key}>{label}</a></li>
+        ))}
+      </ul>
+    </div>
+    <div>
+      <h2 class="footer-title">Liên hệ</h2>
+      <ul class="footer-links">
+        <li>{site.address}</li>
+        <li><a href={links.tel}>{site.phone}</a></li>
+        {site.hours && <li>{site.hours}</li>}
+        <li><a href={links.directions} target="_blank" rel="noopener">Chỉ đường đến cửa hàng →</a></li>
+      </ul>
+    </div>
+  </div>
+  <div class="container footer-bottom">
+    <p>© {new Date().getFullYear()} {site.brand}</p>
+  </div>
+</footer>
