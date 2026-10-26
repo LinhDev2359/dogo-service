@@ -1,4 +1,4 @@
-import { defineCollection } from 'astro:content';
+import { defineCollection, reference } from 'astro:content';
 import { z } from 'astro/zod';
 import { glob } from 'astro/loaders';
 
@@ -13,6 +13,7 @@ const products = defineCollection({
     category: z.enum(CATEGORY_KEYS).catch('my-nghe'),
     status: z.enum(STATUS_KEYS).catch('dat-lam'),
     images: z.array(image()).nullish().transform(v => v ?? []),
+    woods: z.array(reference('woods')).nullish().transform(v => v ?? []),
     material: z.string().nullish(),
     size: z.string().nullish(),
     price: z.string().nullish(),
@@ -20,6 +21,21 @@ const products = defineCollection({
     featured: z.boolean().default(false),
     visible: z.boolean().default(true),
     order: z.number().nullish(),
+  }),
+});
+
+// Các loại gỗ cửa hàng dùng: mỗi loại một file JSON (sửa qua /admin)
+const woods = defineCollection({
+  loader: glob({ pattern: '*.json', base: './src/content/woods' }),
+  schema: ({ image }) => z.object({
+    name: z.string(),
+    tone: z.string().regex(/^#[0-9a-fA-F]{6}$/).catch('#8a5a32'),
+    summary: z.string().nullish(),
+    traits: z.array(z.string()).nullish().transform(v => v ?? []),
+    uses: z.string().nullish(),
+    image: image().nullish(),
+    order: z.number().nullish(),
+    visible: z.boolean().default(true),
   }),
 });
 
@@ -47,4 +63,4 @@ const settings = defineCollection({
   }),
 });
 
-export const collections = { products, settings };
+export const collections = { products, woods, settings };

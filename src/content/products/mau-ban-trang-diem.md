@@ -4,6 +4,8 @@ category: giuong-tu
 status: co-san
 images:
   - ../../assets/products/vi-du-ban-ngan-keo.webp
+woods:
+  - go-xoan-dao
 material: ""
 size: ""
 price: ""

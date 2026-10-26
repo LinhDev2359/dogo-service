@@ -1,0 +1,26 @@
+---
+// Trang quản trị riêng của Doanh Tuyết (thiết kế cho điện thoại). Không có trong sitemap, chặn Google.
+import '../../admin/admin.css';
+---
+<!doctype html>
+<html lang="vi">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="robots" content="noindex, nofollow">
+  <meta name="theme-color" content="#faf6ef">
+  <title>Quản trị – Doanh Tuyết</title>
+  <link rel="icon" href="/favicon.png" type="image/png">
+  <link rel="apple-touch-icon" href="/apple-touch-icon.png">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;500;600;700&family=Playfair+Display:wght@600&display=swap" rel="stylesheet">
+</head>
+<body>
+  <div id="app" class="ad-app"><div class="ad-loading"><span class="ad-spin"></span>Đang mở trang quản trị…</div></div>
+  <div id="ad-toast" class="ad-toast" role="status" aria-live="polite"></div>
+  <script>
+    import '../../admin/app';
+  </script>
+</body>
+</html>

@@ -3,6 +3,7 @@ import Base from '../../layouts/Base.astro';
 import Icon from '../../components/Icon.astro';
 import Media from '../../components/Media.astro';
 import ProductCard from '../../components/ProductCard.astro';
+import WoodSwatch from '../../components/WoodSwatch.astro';
 import { CATEGORIES, STATUS, contactLinks, getProducts, getSite, paragraphs, type Product } from '../../lib/data';
 import { getImage } from 'astro:assets';
 
@@ -18,7 +19,18 @@ const site = await getSite();
 const links = contactLinks(site);
 const status = STATUS[d.status];
 const desc = paragraphs(p.body);
-const specs = [['Danh mục', CATEGORIES[d.category]], ['Chất liệu', d.material], ['Kích thước', d.size]].filter(([, v]) => v);
+const woods = p.woodList;
+const images = d.images.length ? d.images : [null];
+
+// Thông số: chỉ hiện những gì đã có; kích thước trống thì nói rõ là làm theo yêu cầu
+const specs: [string, string][] = [
+  ['Danh mục', CATEGORIES[d.category]],
+  ['Chất liệu gỗ', woods.length ? woods.map(w => w.data.name).join(', ') : 'Trao đổi khi tư vấn'],
+  ['Kích thước', d.size || 'Theo kích thước gia đình cần'],
+  ...(d.material ? [['Ghi chú', d.material] as [string, string]] : []),
+  ['Tình trạng', status.label],
+];
+
 // Ưu tiên mẫu cùng danh mục, thiếu thì bù mẫu khác cho đủ một hàng 4 thẻ
 const related = products.filter(r => r !== p && r.data.category === d.category).slice(0, 4);
 const more = [...related, ...products.filter(r => r !== p && !related.includes(r))].slice(0, 4);
@@ -26,7 +38,8 @@ const more = [...related, ...products.filter(r => r !== p && !related.includes(r
 // Ảnh xem trước khi gửi link qua Zalo/Facebook
 const og = d.images[0] ? await getImage({ src: d.images[0], width: 1200, height: 630, fit: 'cover', format: 'jpeg' }) : null;
 const metaDesc = desc[0] || `${d.name} – ${status.label}. ${CATEGORIES[d.category]} tại ${site.brand}. Liên hệ để được tư vấn và báo giá.`;
-const zaloText = `Tôi muốn hỏi về mẫu: ${d.name} – ${new URL(p.url, Astro.site).href}`;
+const pageUrl = new URL(p.url, Astro.site).href;
+const zaloText = `Tôi muốn hỏi về mẫu: ${d.name} – ${pageUrl}`;
 ---
 <Base title={d.name} description={metaDesc} image={og?.src} type="product">
   <div class="container page-head">
@@ -39,16 +52,18 @@ const zaloText = `Tôi muốn hỏi về mẫu: ${d.name} – ${new URL(p.url, A
   </div>
 
   <div class="container product">
-    <div class:list={['pm-gallery', { single: d.images.length < 2 }]}>
-      <div class="pm-stage" style={`view-transition-name: img-${p.id}`}>
-        {(d.images.length ? d.images : [null]).map((img, i) => (
+    <div class:list={['pm-gallery', { single: images.length < 2 }]}>
+      <div class="pm-stage" style={`view-transition-name: img-${p.id}`} role="button" tabindex="0" aria-label="Xem ảnh lớn">
+        {images.map((img, i) => (
           <Media src={img} alt={`${d.name} – ảnh ${i + 1}`} ph={p.ph} class={i === 0 ? 'is-active' : ''}
             widths={[600, 900, 1400]} sizes="(max-width: 960px) 100vw, 55vw" priority={i === 0} />
         ))}
+        {d.images.length > 0 && <span class="pm-zoom" aria-hidden="true"><Icon name="search" />Bấm để xem lớn</span>}
+        {images.length > 1 && <span class="pm-counter" aria-hidden="true"><b>1</b> / {images.length}</span>}
       </div>
       <button class="pm-nav pm-prev" type="button" aria-label="Ảnh trước"><Icon name="left" /></button>
       <button class="pm-nav pm-next" type="button" aria-label="Ảnh tiếp theo"><Icon name="right" /></button>
-      {d.images.length > 1 && (
+      {images.length > 1 && (
         <div class="pm-thumbs">
           {d.images.map((img, i) => (
             <button type="button" aria-label={`Xem ảnh ${i + 1}`} aria-current={i === 0 ? 'true' : 'false'}>
@@ -60,13 +75,45 @@ const zaloText = `Tôi muốn hỏi về mẫu: ${d.name} – ${new URL(p.url, A
     </div>
 
     <div class="pm-info">
-      <span class:list={['badge', `badge-${d.status}`]}>{status.label}</span>
-      <p class="pm-status-note">{status.note}</p>
+      <div class="pm-top">
+        <span class:list={['badge', `badge-${d.status}`]}>{status.label}</span>
+        <button class="pm-share" type="button" data-url={pageUrl} data-title={d.name}><Icon name="share" />Chia sẻ</button>
+      </div>
       <h1>{d.name}</h1>
+      <p class="pm-status-note">{status.note}</p>
+
       <dl class="pm-specs">{specs.map(([k, v]) => <><dt>{k}</dt><dd>{v}</dd></>)}</dl>
+
+      {woods.length > 0 && (
+        <section class="pm-woods" aria-labelledby="woods-title">
+          <h2 id="woods-title" class="pm-sub">Chất liệu gỗ</h2>
+          <p class="pm-sub-note">{woods.length > 1 ? 'Mẫu này có thể làm bằng các loại gỗ dưới đây. Bấm để xem đặc điểm.' : 'Mẫu này làm bằng:'}</p>
+          <div class="wood-chips" role="tablist" aria-label="Loại gỗ">
+            {woods.map((w, i) => (
+              <button class="wood-chip" type="button" role="tab" id={`tab-${w.id}`} aria-controls={`panel-${w.id}`} aria-selected={i === 0 ? 'true' : 'false'}>
+                <WoodSwatch wood={w} />{w.data.name}
+              </button>
+            ))}
+          </div>
+          {woods.map((w, i) => (
+            <div class="wood-panel" role="tabpanel" id={`panel-${w.id}`} aria-labelledby={`tab-${w.id}`} hidden={i !== 0}>
+              <WoodSwatch wood={w} size="md" />
+              <div>
+                {w.data.summary && <p>{w.data.summary}</p>}
+                {w.data.traits.length > 0 && <ul class="ticks">{w.data.traits.map(t => <li>{t}</li>)}</ul>}
+              </div>
+            </div>
+          ))}
+          <a href="/chat-lieu-go/" class="link-arrow">Tìm hiểu các loại gỗ →</a>
+        </section>
+      )}
+
       {desc.length > 0 && <div class="pm-desc">{desc.map(t => <p>{t}</p>)}</div>}
-      <p class="pm-price">{p.price}</p>
-      <p class="pm-note">Có thể làm theo kích thước, chất liệu và yêu cầu riêng của gia đình.</p>
+
+      <div class="pm-price-box">
+        <p class="pm-price">{p.price}</p>
+        <p class="pm-note">Có thể làm theo kích thước, chất liệu và yêu cầu riêng của gia đình.</p>
+      </div>
       <div class="pm-actions">
         <a href={links.tel} class="btn"><Icon name="phone" />Gọi hỏi giá · {site.phone}</a>
         <a href={links.zalo} class="btn btn-zalo" id="ask-zalo" data-text={zaloText} target="_blank" rel="noopener"><Icon name="zalo" class="ic-zalo" />Hỏi qua Zalo</a>
@@ -88,35 +135,93 @@ const zaloText = `Tôi muốn hỏi về mẫu: ${d.name} – ${new URL(p.url, A
       </div>
     </section>
   )}
+
+  {d.images.length > 0 && (
+    <dialog class="lightbox" id="pm-lightbox" aria-label={`Ảnh ${d.name}`}>
+      <button class="modal-close" type="button" data-close aria-label="Đóng"><Icon name="close" /></button>
+      <figure class="lb-figure" data-backdrop>
+        <div class="lb-stage" data-backdrop>
+          {d.images.map((img, i) => (
+            <div class="lb-item" hidden={i !== 0} data-backdrop>
+              <Media src={img} alt={`${d.name} – ảnh ${i + 1}`} widths={[900, 1600]} sizes="92vw" />
+            </div>
+          ))}
+        </div>
+        <figcaption data-backdrop>{d.name}</figcaption>
+      </figure>
+      {d.images.length > 1 && <>
+        <button class="pm-nav pm-prev" type="button" aria-label="Ảnh trước"><Icon name="left" /></button>
+        <button class="pm-nav pm-next" type="button" aria-label="Ảnh tiếp theo"><Icon name="right" /></button>
+      </>}
+    </dialog>
+  )}
 </Base>
 
 <script>
-  import { $, $$, addSwipe, toast } from '../../scripts/util';
+  import { $, $$, addSwipe, openDialog, toast, wireDialog } from '../../scripts/util';
 
-  // Xem ảnh: nút trái/phải, ảnh nhỏ, vuốt, phím mũi tên
+  // Ảnh: nút trái/phải, ảnh nhỏ, vuốt, phím mũi tên
   const stage = $('.pm-stage');
-  const items = stage ? [...stage.children] as HTMLElement[] : [];
+  const items = stage ? $$(':scope > img, :scope > .ph', stage) : [];
   const thumbs = $$('.pm-thumbs button');
+  const counter = $('.pm-counter b');
+  const box = $<HTMLDialogElement>('#pm-lightbox');
+  const lbItems = box ? $$('.lb-item', box) : [];
   let index = 0;
+
   function show(i: number) {
     index = (i + items.length) % items.length;
     items.forEach((it, j) => it.classList.toggle('is-active', j === index));
     thumbs.forEach((t, j) => t.setAttribute('aria-current', String(j === index)));
+    lbItems.forEach((it, j) => (it.hidden = j !== index));
+    if (counter) counter.textContent = String(index + 1);
   }
   if (items.length > 1) {
-    $('.pm-prev')!.addEventListener('click', () => show(index - 1));
-    $('.pm-next')!.addEventListener('click', () => show(index + 1));
+    $$('.pm-gallery .pm-prev, #pm-lightbox .pm-prev').forEach(b => b.addEventListener('click', () => show(index - 1)));
+    $$('.pm-gallery .pm-next, #pm-lightbox .pm-next').forEach(b => b.addEventListener('click', () => show(index + 1)));
     thumbs.forEach((t, j) => t.addEventListener('click', () => show(j)));
     addSwipe(stage!, dir => show(index + dir));
+    if (box) addSwipe(box, dir => show(index + dir));
     document.addEventListener('keydown', e => {
+      if ((e.target as Element).closest('input, textarea, [role="tab"]')) return;
       if (e.key === 'ArrowLeft') show(index - 1);
       if (e.key === 'ArrowRight') show(index + 1);
     });
   }
-  // Bấm ảnh để xem toàn màn hình
-  stage?.addEventListener('click', () => {
-    const img = items[index].querySelector('img') ?? (items[index] instanceof HTMLImageElement ? items[index] : null);
-    if (img && document.fullscreenEnabled) img.requestFullscreen().catch(() => {});
+
+  // Bấm ảnh để xem lớn (hộp xem ảnh; trên điện thoại có thể chụm 2 ngón để phóng to)
+  if (box && stage) {
+    wireDialog(box);
+    const open = () => openDialog(box);
+    stage.addEventListener('click', open);
+    stage.addEventListener('keydown', e => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); open(); } });
+  }
+
+  // Tab chọn loại gỗ
+  const tabs = $$<HTMLButtonElement>('.wood-chip');
+  tabs.forEach((tab, i) => {
+    tab.addEventListener('click', () => {
+      tabs.forEach(t => t.setAttribute('aria-selected', String(t === tab)));
+      $$('.wood-panel').forEach(p => (p.hidden = p.id !== tab.getAttribute('aria-controls')));
+    });
+    tab.addEventListener('keydown', e => {
+      const dir = e.key === 'ArrowRight' ? 1 : e.key === 'ArrowLeft' ? -1 : 0;
+      if (!dir) return;
+      const next = tabs[(i + dir + tabs.length) % tabs.length];
+      next.focus();
+      next.click();
+    });
+  });
+
+  // Chia sẻ: dùng bảng chia sẻ của điện thoại, máy tính thì sao chép đường link
+  const share = $('.pm-share');
+  share?.addEventListener('click', async () => {
+    const url = share.dataset.url || location.href;
+    if (navigator.share) {
+      try { await navigator.share({ title: share.dataset.title, url }); } catch { /* khách bấm hủy */ }
+      return;
+    }
+    navigator.clipboard?.writeText(url).then(() => toast('Đã sao chép đường link mẫu này.')).catch(() => {});
   });
 
   // Zalo không tự điền tin nhắn được, nên sao chép sẵn tên mẫu để khách dán vào

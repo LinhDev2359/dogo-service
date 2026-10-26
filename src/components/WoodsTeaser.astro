@@ -1,0 +1,32 @@
+---
+// Giới thiệu nhanh các loại gỗ trên trang chủ
+import WoodSwatch from './WoodSwatch.astro';
+import type { Wood } from '../lib/data';
+
+interface Props { woods: Wood[] }
+const { woods } = Astro.props;
+---
+{woods.length > 0 && (
+  <section class="section woods-teaser" id="chat-lieu">
+    <div class="container">
+      <div class="section-head section-head-row" data-reveal>
+        <div>
+          <p class="eyebrow">Chất liệu</p>
+          <h2>Các loại gỗ chúng tôi dùng</h2>
+        </div>
+        <a href="/chat-lieu-go/" class="link-arrow">Tìm hiểu thêm →</a>
+      </div>
+      <div class="wood-grid" data-stagger>
+        {woods.map(w => (
+          <a class="wood-tile" href={w.url} data-reveal>
+            <WoodSwatch wood={w} size="md" />
+            <span class="wood-tile-text">
+              <b>{w.data.name}</b>
+              {w.data.summary && <small>{w.data.summary}</small>}
+            </span>
+          </a>
+        ))}
+      </div>
+    </div>
+  </section>
+)}

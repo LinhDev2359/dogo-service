@@ -4,6 +4,8 @@ category: ban-tho
 status: trung-bay
 images:
   - ../../assets/products/vi-du-tu-tho.webp
+woods:
+  - go-gu
 material: ""
 size: ""
 price: ""

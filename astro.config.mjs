@@ -1,6 +1,7 @@
 // @ts-check
 import { defineConfig } from 'astro/config';
 import sitemap from '@astrojs/sitemap';
+import adminDevApi from './src/integrations/admin-dev-api.ts';
 
 // Địa chỉ chính thức của web. Khi có tên miền, đặt biến môi trường SITE_URL
 // trong Cloudflare Pages (VD: https://doanhtuyet.vn). Cloudflare tự cung cấp CF_PAGES_URL.
@@ -9,5 +10,5 @@ const site = process.env.SITE_URL || process.env.CF_PAGES_URL || 'http://localho
 export default defineConfig({
   site,
   trailingSlash: 'always',
-  integrations: [sitemap()],
+  integrations: [sitemap({ filter: page => !page.includes('/admin/') }), adminDevApi()],
 });

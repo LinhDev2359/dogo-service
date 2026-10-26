@@ -3,10 +3,11 @@ import Base from '../../layouts/Base.astro';
 import Icon from '../../components/Icon.astro';
 import ProductCard from '../../components/ProductCard.astro';
 import CategoryTabs from '../../components/CategoryTabs.astro';
-import { STATUS, contactLinks, getProducts, getSite } from '../../lib/data';
+import { STATUS, contactLinks, getProducts, getSite, getWoods } from '../../lib/data';
 
 const site = await getSite();
 const products = await getProducts();
+const woods = await getWoods();
 const links = contactLinks(site);
 
 ---
@@ -30,13 +31,23 @@ const links = contactLinks(site);
             <button class="search-clear" type="button" aria-label="Xóa tìm kiếm" hidden><Icon name="close" /></button>
           </div>
           <label class="select">
-            <span>Tình trạng</span>
+            <span class="sr-only">Tình trạng</span>
             <select id="status-filter">
-              <option value="all">Tất cả</option>
+              <option value="all">Mọi tình trạng</option>
               {Object.entries(STATUS).map(([key, s]) => <option value={key}>{s.label}</option>)}
             </select>
             <Icon name="down" />
           </label>
+          {woods.length > 0 && (
+            <label class="select">
+              <span class="sr-only">Loại gỗ</span>
+              <select id="wood-filter">
+                <option value="all">Mọi loại gỗ</option>
+                {woods.map(w => <option value={w.id}>{w.data.name}</option>)}
+              </select>
+              <Icon name="down" />
+            </label>
+          )}
           <p class="result-count" aria-live="polite">{products.length} mẫu</p>
           <button class="link-btn clear-filters" type="button" hidden>Xóa bộ lọc</button>
         </div>
@@ -71,19 +82,21 @@ const links = contactLinks(site);
   const tabs = $$('.cat-tab');
   const search = $<HTMLInputElement>('#search')!;
   const statusSelect = $<HTMLSelectElement>('#status-filter')!;
+  const woodSelect = $<HTMLSelectElement>('#wood-filter');
   const moreBtn = $('#more-btn')!;
   const emptyBox = $('.empty-state')!;
   const clearBtns = $$('.clear-filters');
   const searchClear = $('.search-clear')!;
   const resultCount = $('.result-count')!;
   const searchAll = $('.search-all')!;
-  const state = { cat: 'all', status: 'all', q: '', limit: PAGE_SIZE };
+  const state = { cat: 'all', status: 'all', wood: 'all', q: '', limit: PAGE_SIZE };
 
   const fold = (s: string) => s.normalize('NFD').replace(/[̀-ͯ]/g, '').replace(/đ/gi, 'd').toLowerCase();
 
   function matches(c: HTMLElement, ignoreCat = false) {
     if (!ignoreCat && state.cat !== 'all' && c.dataset.cat !== state.cat) return false;
     if (state.status !== 'all' && c.dataset.status !== state.status) return false;
+    if (state.wood !== 'all' && !(c.dataset.woods || '').split(' ').includes(state.wood)) return false;
     const text = c.dataset.text || '';
     return fold(state.q).split(/\s+/).filter(Boolean).every(w => text.includes(w));
   }
@@ -115,7 +128,7 @@ const links = contactLinks(site);
         tab.classList.toggle('is-empty', n === 0);
         $('.cat-count', tab)!.textContent = String(n);
       });
-      const filtered = state.cat !== 'all' || state.status !== 'all' || !!state.q.trim();
+      const filtered = state.cat !== 'all' || state.status !== 'all' || state.wood !== 'all' || !!state.q.trim();
       resultCount.textContent = filtered ? `${matched.length} / ${cards.length} mẫu` : `${cards.length} mẫu`;
       clearBtns.forEach(b => (b.hidden = !filtered));
       searchClear.hidden = !state.q;
@@ -139,6 +152,7 @@ const links = contactLinks(site);
     const params = new URLSearchParams();
     if (state.cat !== 'all') params.set('danh-muc', state.cat);
     if (state.status !== 'all') params.set('tinh-trang', state.status);
+    if (state.wood !== 'all') params.set('go', state.wood);
     if (state.q.trim()) params.set('tim', state.q.trim());
     const qs = params.toString();
     history.replaceState(null, '', location.pathname + (qs ? '?' + qs : '') + location.hash);
@@ -149,13 +163,17 @@ const links = contactLinks(site);
     const status = params.get('tinh-trang');
     if (cat && tabs.some(t => t.dataset.cat === cat)) state.cat = cat;
     if (status && [...statusSelect.options].some(o => o.value === status)) state.status = status;
+    const wood = params.get('go');
+    if (wood && woodSelect && [...woodSelect.options].some(o => o.value === wood)) state.wood = wood;
+    if (woodSelect) woodSelect.value = state.wood;
     state.q = params.get('tim') || '';
     search.value = state.q;
     statusSelect.value = state.status;
   }
 
   function clearFilters() {
-    Object.assign(state, { cat: 'all', status: 'all', q: '' });
+    Object.assign(state, { cat: 'all', status: 'all', wood: 'all', q: '' });
+    if (woodSelect) woodSelect.value = 'all';
     search.value = '';
     statusSelect.value = 'all';
     update();
@@ -178,6 +196,7 @@ const links = contactLinks(site);
     $('#danh-sach')!.scrollIntoView({ behavior: reduceMotion ? 'auto' : 'smooth' });
   });
   statusSelect.addEventListener('change', () => { state.status = statusSelect.value; update(); });
+  woodSelect?.addEventListener('change', () => { state.wood = woodSelect.value; update(); });
 
   let timer: number | undefined;
   search.addEventListener('input', () => {

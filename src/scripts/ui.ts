@@ -27,6 +27,7 @@ document.addEventListener('keydown', e => { if (e.key === 'Escape') setMenu(fals
 // Tô đậm mục menu đang xem
 const path = location.pathname;
 if (path.startsWith('/san-pham/')) $('[data-nav="san-pham"]')?.classList.add('is-active');
+if (path.startsWith('/chat-lieu-go/')) $('[data-nav="chat-lieu"]')?.classList.add('is-active');
 if (path === '/' && 'IntersectionObserver' in window) {
   const links = $$<HTMLAnchorElement>('.nav a[data-nav]');
   const spy = new IntersectionObserver(entries => {
@@ -53,3 +54,14 @@ $$('[data-reveal]').forEach(n => (revealObs ? revealObs.observe(n) : n.classList
 
 // Nhấp nháy nhẹ một lần để khách để ý
 if (!reduceMotion) setTimeout(() => $('#fab')?.classList.add('nudge'), 5000);
+
+// Ảnh hiện dần khi tải xong (tránh cảnh ảnh hiện giật từng mảng)
+if (!reduceMotion) {
+  $$<HTMLImageElement>('main img').forEach(img => {
+    if (img.complete) return;
+    img.classList.add('img-loading');
+    const done = () => img.classList.remove('img-loading');
+    img.addEventListener('load', done, { once: true });
+    img.addEventListener('error', done, { once: true });
+  });
+}

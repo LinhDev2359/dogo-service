@@ -3,6 +3,8 @@ name: Mẫu câu đối
 category: hoanh-phi
 status: dat-lam
 images: []
+woods:
+  - go-mit
 material: ""
 size: ""
 price: ""

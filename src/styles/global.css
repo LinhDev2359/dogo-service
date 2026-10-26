@@ -284,6 +284,7 @@ p { margin: 0 0 1em; }
 /* Dải sản phẩm nổi bật: trượt ngang, 3 thẻ một lần trên máy tính */
 .section-head-row { display: flex; align-items: flex-end; justify-content: space-between; gap: 24px; max-width: none; }
 .section-head-row h2 { margin-bottom: 0; }
+.section-head-row > .link-arrow { flex: none; white-space: nowrap; }
 .strip-nav { display: flex; gap: 10px; flex: none; }
 .strip-arrow {
   width: 46px; height: 46px; border-radius: 50%; display: grid; place-items: center; cursor: pointer;
@@ -443,8 +444,13 @@ p { margin: 0 0 1em; }
 .product { display: grid; grid-template-columns: 1.15fr 1fr; gap: 48px; align-items: start; padding-bottom: 72px; }
 .pm-gallery { position: relative; }
 .pm-stage { position: relative; aspect-ratio: 4 / 3; overflow: hidden; border-radius: var(--radius); background: var(--wood-200); touch-action: pan-y; cursor: zoom-in; }
-.pm-stage > * { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; aspect-ratio: auto; opacity: 0; transition: opacity .45s var(--ease); }
+.pm-stage > img, .pm-stage > .ph { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; aspect-ratio: auto; opacity: 0; transition: opacity .45s var(--ease); }
 .pm-stage > .is-active { opacity: 1; }
+.pm-zoom, .pm-counter { position: absolute; z-index: 1; display: inline-flex; align-items: center; gap: 6px; padding: 5px 11px; border-radius: 999px; background: rgba(20,12,6,.6); color: #fff; font-size: .78rem; pointer-events: none; }
+.pm-zoom { left: 12px; bottom: 12px; opacity: 0; transition: opacity .25s; }
+.pm-zoom .ic { width: 14px; height: 14px; }
+.pm-stage:hover .pm-zoom { opacity: 1; }
+.pm-counter { right: 12px; bottom: 12px; }
 .pm-nav {
   position: absolute; top: 50%; translate: 0 -50%; z-index: 2; width: 42px; height: 42px; border-radius: 50%; border: 0; cursor: pointer;
   display: grid; place-items: center; background: rgba(250,246,239,.9); color: var(--wood-900); box-shadow: var(--shadow);
@@ -459,14 +465,76 @@ p { margin: 0 0 1em; }
 .pm-thumbs button:hover { opacity: .9; }
 .pm-thumbs button[aria-current="true"] { border-color: var(--gold); opacity: 1; }
 .pm-thumbs button > * { width: 100%; height: 100%; object-fit: cover; aspect-ratio: auto; }
-.pm-info { position: sticky; top: calc(var(--header-h) + 16px); }
-.pm-info h1 { font-size: clamp(1.7rem, 3.6vw, 2.5rem); margin-top: 6px; }
-.pm-status-note { font-size: .88rem; color: var(--muted); margin: 8px 0 16px; }
+.pm-gallery { position: sticky; top: calc(var(--header-h) + 8px); }
+.pm-top { display: flex; align-items: center; justify-content: space-between; gap: 12px; }
+.pm-share { display: inline-flex; align-items: center; gap: 6px; padding: 6px 12px; border: 1px solid var(--wood-200); border-radius: 999px; background: #fff; color: var(--wood-900); font-size: .85rem; font-weight: 500; cursor: pointer; transition: border-color .2s, background .2s; }
+.pm-share:hover { border-color: var(--wood-500); }
+.pm-share .ic { width: 16px; height: 16px; }
+.pm-info h1 { font-size: clamp(1.7rem, 3.6vw, 2.5rem); margin: 14px 0 6px; }
+.pm-status-note { font-size: .9rem; color: var(--muted); margin: 0 0 8px; }
 .pm-specs { display: grid; grid-template-columns: auto 1fr; gap: 8px 20px; margin: 16px 0; padding: 16px 0; border-block: 1px solid var(--wood-200); font-size: .95rem; }
 .pm-specs dt { color: var(--muted); }
 .pm-specs dd { margin: 0; font-weight: 500; }
 .pm-desc p { color: #4a3e33; }
-.pm-price { font-size: 1.25rem; font-weight: 600; color: var(--wood-700); margin: 16px 0 4px; }
+.pm-price-box { margin-top: 20px; padding: 16px 18px; border-radius: var(--radius); background: var(--wood-100); }
+.pm-price { font-size: 1.25rem; font-weight: 600; color: var(--wood-700); margin: 0 0 2px; }
+.pm-price-box .pm-note { margin: 0; }
+
+/* Chất liệu gỗ ở trang chi tiết */
+.pm-woods { margin: 4px 0 20px; }
+.pm-sub { font-size: 1.15rem; margin: 0 0 4px; }
+.pm-sub-note { font-size: .88rem; color: var(--muted); margin-bottom: 12px; }
+.wood-chips { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 12px; }
+.wood-chip {
+  display: inline-flex; align-items: center; gap: 8px; padding: 5px 14px 5px 5px; min-height: 40px; border-radius: 999px; cursor: pointer;
+  border: 1px solid var(--wood-200); background: #fff; color: var(--wood-900); font-weight: 500; font-size: .9rem; transition: border-color .2s, background .2s, color .2s;
+}
+.wood-chip:hover { border-color: var(--wood-500); }
+.wood-chip[aria-selected="true"] { background: var(--wood-900); border-color: var(--wood-900); color: #fff; }
+.wood-panel { display: grid; grid-template-columns: auto 1fr; gap: 16px; align-items: start; padding: 14px; margin-bottom: 12px; border: 1px solid var(--wood-200); border-radius: var(--radius); background: #fff; animation: fadeUp .35s var(--ease) both; }
+.wood-panel[hidden] { display: none; }
+.wood-panel p { margin-bottom: .5em; font-size: .94rem; }
+.wood-panel .ticks li { font-size: .9rem; }
+
+/* Ô màu gỗ: vẽ vân gỗ bằng CSS khi chưa có ảnh */
+.swatch {
+  --tone: #8a5a32;
+  position: relative; display: inline-block; flex: none; overflow: hidden; border-radius: 50%;
+  background:
+    repeating-radial-gradient(ellipse 160% 46% at 18% 120%, rgba(0,0,0,.12) 0 1.5px, transparent 1.5px 7px),
+    repeating-linear-gradient(96deg, rgba(255,255,255,.07) 0 1px, transparent 1px 5px),
+    linear-gradient(140deg, color-mix(in srgb, var(--tone) 78%, #fff), var(--tone) 55%, color-mix(in srgb, var(--tone) 75%, #000));
+  box-shadow: inset 0 0 0 1px rgba(0,0,0,.12);
+}
+.swatch img { width: 100%; height: 100%; object-fit: cover; display: block; }
+.swatch-sm { width: 28px; height: 28px; }
+.swatch-md { width: 56px; height: 56px; border-radius: 14px; }
+.swatch-lg { width: 100%; aspect-ratio: 4 / 3; border-radius: var(--radius); }
+.swatch-stack { display: inline-flex; }
+.swatch-stack .swatch { width: 18px; height: 18px; box-shadow: 0 0 0 2px #fff; }
+.swatch-stack .swatch + .swatch { margin-left: -6px; }
+.card-woods { display: flex; align-items: center; gap: 8px; margin: 4px 0 0; font-size: .82rem; color: var(--muted); min-width: 0; }
+.card-woods > span:last-child { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+
+/* Trang chủ: giới thiệu các loại gỗ */
+.wood-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; }
+.wood-tile {
+  display: flex; gap: 14px; align-items: center; padding: 14px; border-radius: var(--radius); background: #fff; text-decoration: none; color: inherit;
+  box-shadow: var(--shadow); transition: transform .3s var(--ease), box-shadow .3s var(--ease);
+}
+.wood-tile:hover { transform: translateY(-3px); box-shadow: var(--shadow-lg); }
+.wood-tile-text { display: flex; flex-direction: column; gap: 2px; min-width: 0; }
+.wood-tile-text b { font-family: "Playfair Display", serif; font-size: 1.08rem; color: var(--wood-900); }
+.wood-tile-text small { color: var(--muted); font-size: .82rem; line-height: 1.4; }
+
+/* Trang Chất liệu gỗ */
+.wood-list { display: grid; gap: 28px; }
+.wood-card { display: grid; grid-template-columns: minmax(0, 5fr) minmax(0, 7fr); gap: 36px; align-items: center; padding: 24px; border-radius: var(--radius); background: #fff; box-shadow: var(--shadow); scroll-margin-top: calc(var(--header-h) + 16px); }
+.wood-card h2 { margin-bottom: .3em; }
+.wood-summary { font-size: 1.05rem; color: #4a3e33; }
+.wood-uses { color: var(--muted); }
+.wood-card .ticks { margin-bottom: 1em; }
+.wood-card:target { box-shadow: 0 0 0 2px var(--gold), var(--shadow-lg); }
 .pm-note { font-size: .9rem; color: var(--muted); }
 .pm-actions { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 20px; }
 .pm-actions .btn:first-child { grid-column: 1 / -1; }
@@ -507,6 +575,11 @@ p { margin: 0 0 1em; }
 }
 .toast.is-shown { opacity: 1; translate: -50% 0; }
 
+/* Ảnh hiện dần khi tải xong; nhún nhẹ khi chạm trên điện thoại */
+img.img-loading { opacity: 0; }
+main img { transition: opacity .5s var(--ease), transform .7s var(--ease); }
+.card-link:active, .wood-tile:active, .gallery-item:active { transform: scale(.985); }
+
 /* Hiện dần khi cuộn tới */
 .js [data-reveal] { opacity: 0; transform: translateY(22px); transition: opacity .8s var(--ease), transform .8s var(--ease); transition-delay: calc(var(--i, 0) * 80ms); }
 .js [data-reveal].is-visible { opacity: 1; transform: none; }
@@ -532,6 +605,7 @@ p { margin: 0 0 1em; }
   .nav { gap: 20px; }
   .highlights-grid { grid-template-columns: repeat(2, 1fr); }
   .cat-tabs { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+  .wood-grid { grid-template-columns: repeat(2, 1fr); }
   .strip { grid-auto-columns: calc((100% - 2 * 24px) / 2.4); }
   .product-grid { grid-template-columns: repeat(2, 1fr); }
   .story, .contact { grid-template-columns: 1fr; gap: 32px; }
@@ -540,7 +614,7 @@ p { margin: 0 0 1em; }
   .footer-grid { grid-template-columns: 1fr 1fr; }
   .footer-brand { grid-column: 1 / -1; }
   .product { grid-template-columns: 1fr; gap: 28px; }
-  .pm-info { position: static; }
+  .pm-gallery { position: static; }
   .related .product-grid { grid-template-columns: repeat(2, 1fr); }
 }
 
@@ -579,6 +653,12 @@ p { margin: 0 0 1em; }
   .highlights-grid { gap: 16px; padding: 22px 0; }
   .highlights-grid span { font-size: .8rem; }
   .product-grid { gap: 12px; }
+  .wood-grid { grid-template-columns: 1fr 1fr; gap: 10px; }
+  .wood-tile { flex-direction: column; align-items: flex-start; padding: 12px; gap: 10px; }
+  .wood-tile-text small { display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden; }
+  .wood-card { grid-template-columns: 1fr; gap: 16px; padding: 14px; }
+  .card-woods { font-size: .74rem; }
+  .pm-zoom { display: none; }
   .strip { grid-auto-columns: 72%; gap: 12px; margin-inline: -16px; padding-inline: 16px; scroll-padding-inline: 16px; }
   .strip-arrow { width: 40px; height: 40px; }
   .icon-btn { margin-left: auto; width: 40px; height: 40px; }
@@ -594,7 +674,8 @@ p { margin: 0 0 1em; }
   .cat-thumb { width: 34px; height: 34px; }
   .cat-name { font-size: .86rem; }
   .search { flex-basis: 100%; max-width: none; }
-  .select { flex: 1; }
+  .select { flex: 1 1 calc(50% - 6px); min-width: 0; padding-left: 12px; }
+  .select select { min-width: 0; width: 100%; text-overflow: ellipsis; }
   .result-count { font-size: .82rem; }
   .card-body { padding: 10px 12px 14px; }
   .card-body h3 { font-size: .95rem; }

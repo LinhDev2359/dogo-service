@@ -1,30 +1,11 @@
 import { getCollection, getEntry, type CollectionEntry } from 'astro:content';
 
-export const CATEGORIES = {
-  'ban-tho': 'Bàn thờ & án gian',
-  'hoanh-phi': 'Hoành phi, câu đối',
-  'ban-ghe': 'Bàn ghế & sofa',
-  'giuong-tu': 'Giường, tủ & bàn trang điểm',
-  'my-nghe': 'Tượng & mỹ nghệ',
-} as const;
-
-/** Nhãn ngắn cho nút lọc danh mục (tên đầy đủ dùng ở menu và trang chi tiết) */
-export const CATEGORY_SHORT: Record<keyof typeof CATEGORIES, string> = {
-  'ban-tho': 'Bàn thờ',
-  'hoanh-phi': 'Hoành phi, câu đối',
-  'ban-ghe': 'Bàn ghế, sofa',
-  'giuong-tu': 'Giường, tủ',
-  'my-nghe': 'Tượng, mỹ nghệ',
-};
-
-export const STATUS = {
-  'dat-lam': { label: 'Nhận đặt làm', note: 'Mẫu được sản xuất khi khách đặt. Thời gian làm sẽ trao đổi khi tư vấn.' },
-  'co-san': { label: 'Có sẵn', note: 'Hiện có hàng hoàn thiện. Nên gọi trước để kiểm tra còn hàng.' },
-  'trung-bay': { label: 'Mẫu tại cửa hàng', note: 'Mẫu đang trưng bày tại cửa hàng, có thể đến xem trực tiếp.' },
-} as const;
+export { CATEGORIES, CATEGORY_SHORT, STATUS } from './labels';
+import { CATEGORIES } from './labels';
 
 export type Category = keyof typeof CATEGORIES;
-export type Product = CollectionEntry<'products'> & { url: string; ph: number; price: string };
+export type Wood = CollectionEntry<'woods'> & { url: string };
+export type Product = CollectionEntry<'products'> & { url: string; ph: number; price: string; woodList: Wood[] };
 export type Site = CollectionEntry<'settings'>['data'];
 
 /** Chuỗi trong ngoặc vuông là chỗ giữ chỗ, chưa phải thông tin thật */
@@ -34,11 +15,25 @@ export const digits = (s?: string | null) => String(s || '').replace(/[^\d+]/g, 
 export const fold = (s?: string | null) =>
   String(s || '').normalize('NFD').replace(/[̀-ͯ]/g, '').replace(/đ/gi, 'd').toLowerCase();
 
+const byOrder = <T extends { data: { order?: number | null; name: string } }>(a: T, b: T) =>
+  (a.data.order ?? 1e9) - (b.data.order ?? 1e9) || a.data.name.localeCompare(b.data.name, 'vi');
+
+export async function getWoods(): Promise<Wood[]> {
+  const all = await getCollection('woods', w => w.data.visible);
+  return all.sort(byOrder).map(w => ({ ...w, url: `/chat-lieu-go/#${w.id}` }));
+}
+
 export async function getProducts(): Promise<Product[]> {
+  const woods = await getWoods();
   const all = await getCollection('products', p => p.data.visible);
-  return all
-    .sort((a, b) => (a.data.order ?? 1e9) - (b.data.order ?? 1e9) || a.data.name.localeCompare(b.data.name, 'vi'))
-    .map((p, i) => ({ ...p, url: `/san-pham/${p.id}/`, ph: (i % 6) + 1, price: p.data.price || 'Liên hệ báo giá' }));
+  return all.sort(byOrder).map((p, i) => ({
+    ...p,
+    url: `/san-pham/${p.id}/`,
+    ph: (i % 6) + 1,
+    price: p.data.price || 'Liên hệ báo giá',
+    // Bỏ qua loại gỗ đã bị xóa hoặc ẩn
+    woodList: p.data.woods.map(ref => woods.find(w => w.id === ref.id)).filter((w): w is Wood => !!w),
+  }));
 }
 
 export async function getSite(): Promise<Site> {

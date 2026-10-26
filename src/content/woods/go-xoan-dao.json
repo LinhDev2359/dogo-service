@@ -1,0 +1,14 @@
+{
+  "name": "Gỗ xoan đào",
+  "tone": "#9c5a3c",
+  "summary": "Gỗ màu hồng nhạt đến nâu đỏ, nhẹ, dễ gia công.",
+  "traits": [
+    "Màu hồng đến nâu đỏ",
+    "Vân gỗ mềm mại",
+    "Nhẹ, dễ gia công"
+  ],
+  "uses": "Thường dùng cho tủ, giường, bàn ghế gia đình.",
+  "image": null,
+  "order": 40,
+  "visible": true
+}

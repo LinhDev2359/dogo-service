@@ -4,6 +4,8 @@ category: giuong-tu
 status: dat-lam
 images:
   - ../../assets/products/vi-du-tu-go.webp
+woods:
+  - go-xoan-dao
 material: ""
 size: ""
 price: ""

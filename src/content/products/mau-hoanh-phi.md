@@ -4,6 +4,8 @@ category: hoanh-phi
 status: dat-lam
 images:
   - ../../assets/products/vi-du-hoanh-phi.webp
+woods:
+  - go-mit
 material: ""
 size: ""
 price: ""

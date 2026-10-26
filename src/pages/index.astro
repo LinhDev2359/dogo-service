@@ -3,13 +3,15 @@ import Base from '../layouts/Base.astro';
 import Hero from '../components/Hero.astro';
 import FeaturedStrip from '../components/FeaturedStrip.astro';
 import HomeProducts from '../components/HomeProducts.astro';
+import WoodsTeaser from '../components/WoodsTeaser.astro';
 import Gallery from '../components/Gallery.astro';
 import Contact from '../components/Contact.astro';
 import Media from '../components/Media.astro';
-import { getProducts, getSite, paragraphs } from '../lib/data';
+import { getProducts, getSite, getWoods, paragraphs } from '../lib/data';
 
 const site = await getSite();
 const products = await getProducts();
+const woods = await getWoods();
 ---
 <Base>
   <Hero products={products} site={site} />
@@ -27,7 +29,9 @@ const products = await getProducts();
 
   <HomeProducts products={products} site={site} />
 
-  <section id="ve-chung-toi" class="section">
+  <WoodsTeaser woods={woods} />
+
+  <section id="ve-chung-toi" class="section alt">
     <div class="container story">
       <div class="story-media" data-reveal>
         <Media src={site.story_image} alt={`Cửa hàng ${site.brand}`} ph={7} sizes="(max-width: 960px) 100vw, 50vw" />
@@ -41,7 +45,7 @@ const products = await getProducts();
     </div>
   </section>
 
-  <section id="xuong" class="section alt">
+  <section id="xuong" class="section">
     <div class="container">
       <div class="section-head" data-reveal>
         <p class="eyebrow">Cửa hàng &amp; xưởng</p>
@@ -52,7 +56,7 @@ const products = await getProducts();
     </div>
   </section>
 
-  <section id="quy-trinh" class="section">
+  <section id="quy-trinh" class="section alt">
     <div class="container">
       <div class="section-head" data-reveal>
         <p class="eyebrow">Đặt làm</p>
@@ -67,7 +71,7 @@ const products = await getProducts();
     </div>
   </section>
 
-  <section id="lien-he" class="section alt">
+  <section id="lien-he" class="section">
     <div class="container">
       <div class="section-head" data-reveal>
         <p class="eyebrow">Liên hệ</p>
