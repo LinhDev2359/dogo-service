@@ -1,0 +1,39 @@
+---
+import Base from '../../layouts/Base.astro';
+import WoodSwatch from '../../components/WoodSwatch.astro';
+import { getProducts, getWoods } from '../../lib/data';
+
+const woods = await getWoods();
+const products = await getProducts();
+const countFor = (id: string) => products.filter(p => p.woodList.some(w => w.id === id)).length;
+---
+<Base title="Chất liệu gỗ" description="Các loại gỗ dùng để làm bàn thờ, hoành phi câu đối, bàn ghế, giường tủ và đồ mỹ nghệ – đặc điểm và công dụng từng loại.">
+  <section class="section alt catalog-head">
+    <div class="container">
+      <ol class="breadcrumb"><li><a href="/">Trang chủ</a></li><li aria-current="page">Chất liệu gỗ</li></ol>
+      <h1>Chất liệu gỗ</h1>
+      <p class="section-sub">Mỗi loại gỗ có màu, vân và độ bền khác nhau. Gia đình có thể đến cửa hàng xem và sờ tận tay mẫu gỗ trước khi đặt làm.</p>
+    </div>
+  </section>
+
+  <section class="section woods-page">
+    <div class="container wood-list">
+      {woods.length === 0 && <p class="section-sub">Chưa có thông tin loại gỗ. Vui lòng gọi hoặc nhắn Zalo để được tư vấn.</p>}
+      {woods.map(w => {
+        const n = countFor(w.id);
+        return (
+          <article class="wood-card" id={w.id} data-reveal>
+            <WoodSwatch wood={w} size="lg" />
+            <div class="wood-card-body">
+              <h2>{w.data.name}</h2>
+              {w.data.summary && <p class="wood-summary">{w.data.summary}</p>}
+              {w.data.traits.length > 0 && <ul class="ticks">{w.data.traits.map(t => <li>{t}</li>)}</ul>}
+              {w.data.uses && <p class="wood-uses">{w.data.uses}</p>}
+              {n > 0 && <a class="btn btn-outline" href={`/san-pham/?go=${w.id}`}>Xem {n} mẫu làm bằng {w.data.name.toLowerCase()} →</a>}
+            </div>
+          </article>
+        );
+      })}
+    </div>
+  </section>
+</Base>

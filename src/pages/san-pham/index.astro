@@ -1,0 +1,228 @@
+---
+import Base from '../../layouts/Base.astro';
+import Icon from '../../components/Icon.astro';
+import ProductCard from '../../components/ProductCard.astro';
+import CategoryTabs from '../../components/CategoryTabs.astro';
+import { STATUS, contactLinks, getProducts, getSite, getWoods } from '../../lib/data';
+
+const site = await getSite();
+const products = await getProducts();
+const woods = await getWoods();
+const links = contactLinks(site);
+
+---
+<Base title="Mẫu sản phẩm" description={`Tham khảo ${products.length} mẫu bàn thờ, hoành phi câu đối, bàn ghế, giường tủ và đồ mỹ nghệ của ${site.brand}. Nhận đặt làm theo yêu cầu.`}>
+  <section class="section alt catalog-head">
+    <div class="container">
+      <ol class="breadcrumb"><li><a href="/">Trang chủ</a></li><li aria-current="page">Sản phẩm</li></ol>
+      <h1>Tham khảo các mẫu</h1>
+      <p class="section-sub">Phần lớn sản phẩm được làm theo đơn đặt. Nhãn trên ảnh cho biết mẫu nào đang <b>có sẵn</b> hoặc <b>trưng bày tại cửa hàng</b>.</p>
+    </div>
+  </section>
+
+  <section class="section alt catalog" id="danh-sach">
+    <div class="container">
+      <div class="catalog-bar">
+        <CategoryTabs products={products} />
+        <div class="toolbar">
+          <div class="search" id="tim-kiem">
+            <Icon name="search" />
+            <input type="search" id="search" placeholder="Tìm mẫu: bàn thờ, sofa, tủ…" aria-label="Tìm mẫu sản phẩm" autocomplete="off" enterkeyhint="search">
+            <button class="search-clear" type="button" aria-label="Xóa tìm kiếm" hidden><Icon name="close" /></button>
+          </div>
+          <label class="select">
+            <span class="sr-only">Tình trạng</span>
+            <select id="status-filter">
+              <option value="all">Mọi tình trạng</option>
+              {Object.entries(STATUS).map(([key, s]) => <option value={key}>{s.label}</option>)}
+            </select>
+            <Icon name="down" />
+          </label>
+          {woods.length > 0 && (
+            <label class="select">
+              <span class="sr-only">Loại gỗ</span>
+              <select id="wood-filter">
+                <option value="all">Mọi loại gỗ</option>
+                {woods.map(w => <option value={w.id}>{w.data.name}</option>)}
+              </select>
+              <Icon name="down" />
+            </label>
+          )}
+          <p class="result-count" aria-live="polite">{products.length} mẫu</p>
+          <button class="link-btn clear-filters" type="button" hidden>Xóa bộ lọc</button>
+        </div>
+      </div>
+
+      <div class="product-grid" id="product-grid">
+        {products.map(p => <ProductCard product={p} />)}
+      </div>
+
+      <div class="empty-state" hidden={products.length > 0}>
+        <Icon name="search" />
+        <p class="empty-title">{products.length ? 'Chưa tìm thấy mẫu phù hợp' : 'Chưa có sản phẩm trên web'}</p>
+        <p>Thử từ khóa khác hoặc xóa bộ lọc. Cửa hàng còn nhiều mẫu chưa đăng lên web – hãy gọi hoặc nhắn Zalo để hỏi.</p>
+        <div class="empty-actions">
+          <button class="btn search-all" type="button" hidden>Xem ở mọi danh mục</button>
+          <button class="btn btn-outline clear-filters" type="button">Xóa bộ lọc</button>
+          <a href={links.zalo} class="btn btn-zalo" target="_blank" rel="noopener"><Icon name="zalo" class="ic-zalo" />Hỏi qua Zalo</a>
+        </div>
+      </div>
+      <div class="more-wrap"><button class="btn btn-outline" id="more-btn" type="button" hidden>Xem thêm</button></div>
+    </div>
+  </section>
+</Base>
+
+<script>
+  import { $, $$, reduceMotion } from '../../scripts/util';
+  import { withTransition } from '../../scripts/transition';
+
+  const PAGE_SIZE = 12;
+  const grid = $('#product-grid')!;
+  const cards = $$('.card', grid);
+  const tabs = $$('.cat-tab');
+  const search = $<HTMLInputElement>('#search')!;
+  const statusSelect = $<HTMLSelectElement>('#status-filter')!;
+  const woodSelect = $<HTMLSelectElement>('#wood-filter');
+  const moreBtn = $('#more-btn')!;
+  const emptyBox = $('.empty-state')!;
+  const clearBtns = $$('.clear-filters');
+  const searchClear = $('.search-clear')!;
+  const resultCount = $('.result-count')!;
+  const searchAll = $('.search-all')!;
+  const state = { cat: 'all', status: 'all', wood: 'all', q: '', limit: PAGE_SIZE };
+
+  const fold = (s: string) => s.normalize('NFD').replace(/[̀-ͯ]/g, '').replace(/đ/gi, 'd').toLowerCase();
+
+  function matches(c: HTMLElement, ignoreCat = false) {
+    if (!ignoreCat && state.cat !== 'all' && c.dataset.cat !== state.cat) return false;
+    if (state.status !== 'all' && c.dataset.status !== state.status) return false;
+    if (state.wood !== 'all' && !(c.dataset.woods || '').split(' ').includes(state.wood)) return false;
+    const text = c.dataset.text || '';
+    return fold(state.q).split(/\s+/).filter(Boolean).every(w => text.includes(w));
+  }
+
+  function update({ animate = true, resetLimit = true } = {}) {
+    if (resetLimit) state.limit = PAGE_SIZE;
+    const matched = cards.filter(c => matches(c));
+
+    const apply = () => {
+      cards.forEach(c => {
+        const pos = matched.indexOf(c);
+        const show = pos > -1 && pos < state.limit;
+        if (show && c.hidden) {
+          c.hidden = false;
+          c.classList.add('is-visible');
+          if (animate && !('startViewTransition' in document) && !reduceMotion) {
+            c.classList.remove('is-entering');
+            void c.offsetWidth;
+            c.classList.add('is-entering');
+          }
+        } else if (!show) {
+          c.hidden = true;
+        }
+      });
+      tabs.forEach(tab => {
+        const cat = tab.dataset.cat;
+        const n = cards.filter(c => matches(c, true) && (cat === 'all' || c.dataset.cat === cat)).length;
+        tab.setAttribute('aria-pressed', String(cat === state.cat));
+        tab.classList.toggle('is-empty', n === 0);
+        $('.cat-count', tab)!.textContent = String(n);
+      });
+      const filtered = state.cat !== 'all' || state.status !== 'all' || state.wood !== 'all' || !!state.q.trim();
+      resultCount.textContent = filtered ? `${matched.length} / ${cards.length} mẫu` : `${cards.length} mẫu`;
+      clearBtns.forEach(b => (b.hidden = !filtered));
+      searchClear.hidden = !state.q;
+      const rest = matched.length - state.limit;
+      moreBtn.hidden = rest <= 0;
+      moreBtn.textContent = `Xem thêm ${rest} mẫu`;
+      emptyBox.hidden = matched.length > 0;
+      // Không có kết quả trong danh mục đang chọn nhưng có ở danh mục khác: gợi ý xem tất cả
+      const elsewhere = state.cat !== 'all' ? cards.filter(c => matches(c, true)).length : 0;
+      searchAll.hidden = matched.length > 0 || elsewhere === 0;
+      searchAll.textContent = `Xem ${elsewhere} mẫu ở mọi danh mục`;
+    };
+
+    // Các thẻ tự trượt về chỗ mới khi lọc (trình duyệt hỗ trợ View Transitions)
+    withTransition(apply, animate);
+    syncUrl();
+  }
+
+  // Lưu bộ lọc lên địa chỉ trang để khách gửi link cho người nhà
+  function syncUrl() {
+    const params = new URLSearchParams();
+    if (state.cat !== 'all') params.set('danh-muc', state.cat);
+    if (state.status !== 'all') params.set('tinh-trang', state.status);
+    if (state.wood !== 'all') params.set('go', state.wood);
+    if (state.q.trim()) params.set('tim', state.q.trim());
+    const qs = params.toString();
+    history.replaceState(null, '', location.pathname + (qs ? '?' + qs : '') + location.hash);
+  }
+  function readUrl() {
+    const params = new URLSearchParams(location.search);
+    const cat = params.get('danh-muc');
+    const status = params.get('tinh-trang');
+    if (cat && tabs.some(t => t.dataset.cat === cat)) state.cat = cat;
+    if (status && [...statusSelect.options].some(o => o.value === status)) state.status = status;
+    const wood = params.get('go');
+    if (wood && woodSelect && [...woodSelect.options].some(o => o.value === wood)) state.wood = wood;
+    if (woodSelect) woodSelect.value = state.wood;
+    state.q = params.get('tim') || '';
+    search.value = state.q;
+    statusSelect.value = state.status;
+  }
+
+  function clearFilters() {
+    Object.assign(state, { cat: 'all', status: 'all', wood: 'all', q: '' });
+    if (woodSelect) woodSelect.value = 'all';
+    search.value = '';
+    statusSelect.value = 'all';
+    update();
+  }
+
+  tabs.forEach(tab => tab.addEventListener('click', () => {
+    if (tab.dataset.cat === state.cat) return;
+    state.cat = tab.dataset.cat!;
+    update();
+    tab.scrollIntoView({ block: 'nearest', inline: 'center', behavior: reduceMotion ? 'auto' : 'smooth' });
+  }));
+  // Link danh mục ở menu/chân trang: lọc ngay, không tải lại trang
+  document.addEventListener('click', e => {
+    const link = (e.target as Element).closest<HTMLAnchorElement>('a[data-filter]');
+    if (!link) return;
+    e.preventDefault();
+    link.blur(); // đóng menu thả xuống
+    state.cat = link.dataset.filter!;
+    update();
+    $('#danh-sach')!.scrollIntoView({ behavior: reduceMotion ? 'auto' : 'smooth' });
+  });
+  statusSelect.addEventListener('change', () => { state.status = statusSelect.value; update(); });
+  woodSelect?.addEventListener('change', () => { state.wood = woodSelect.value; update(); });
+
+  let timer: number | undefined;
+  search.addEventListener('input', () => {
+    clearTimeout(timer);
+    searchClear.hidden = !search.value;
+    timer = window.setTimeout(() => { state.q = search.value; update(); }, 220);
+  });
+  search.addEventListener('keydown', e => {
+    if (e.key === 'Enter') { search.blur(); grid.scrollIntoView({ behavior: reduceMotion ? 'auto' : 'smooth' }); }
+  });
+  searchClear.addEventListener('click', () => { search.value = ''; state.q = ''; update(); search.focus(); });
+  clearBtns.forEach(b => b.addEventListener('click', clearFilters));
+  searchAll.addEventListener('click', () => { state.cat = 'all'; update(); });
+  moreBtn.addEventListener('click', () => { state.limit += PAGE_SIZE; update({ resetLimit: false }); });
+
+  // Nút kính lúp trên header dẫn tới #tim-kiem
+  const focusSearch = () => { if (location.hash === '#tim-kiem') search.focus({ preventScroll: true }); };
+  addEventListener('hashchange', focusSearch);
+
+  readUrl();
+  update({ animate: false, resetLimit: false });
+  focusSearch();
+  // Mở trang với một danh mục: cuộn hàng tab (không cuộn trang) để thấy tab đang chọn
+  const activeTab = tabs.find(t => t.dataset.cat === state.cat);
+  if (activeTab && state.cat !== 'all') {
+    const row = activeTab.parentElement!;
+    row.scrollLeft = activeTab.offsetLeft - row.offsetLeft - 16;
+  }
+</script>

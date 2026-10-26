@@ -1,0 +1,12 @@
+---
+// Ô màu gỗ: ảnh mẫu gỗ nếu có, nếu chưa có thì vẽ vân gỗ bằng CSS từ màu đã chọn
+import { Image } from 'astro:assets';
+import type { Wood } from '../lib/data';
+
+interface Props { wood: Wood; size?: 'sm' | 'md' | 'lg'; class?: string }
+const { wood, size = 'sm', class: cls } = Astro.props;
+const px = { sm: 28, md: 56, lg: 480 }[size];
+---
+<span class:list={['swatch', `swatch-${size}`, cls]} style={`--tone: ${wood.data.tone}`} aria-hidden="true">
+  {wood.data.image && <Image src={wood.data.image} alt="" width={px} height={size === 'lg' ? Math.round(px * 0.75) : px} densities={[1, 2]} fit="cover" />}
+</span>

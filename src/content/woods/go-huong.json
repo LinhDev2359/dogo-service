@@ -1,0 +1,14 @@
+{
+  "name": "Gỗ hương",
+  "tone": "#7a3524",
+  "summary": "Gỗ màu đỏ nâu, vân đẹp, có mùi thơm nhẹ.",
+  "traits": [
+    "Vân gỗ rõ, đẹp",
+    "Màu đỏ nâu",
+    "Có mùi thơm nhẹ đặc trưng"
+  ],
+  "uses": "Thường dùng cho bàn ghế phòng khách, đồ thờ, đồ mỹ nghệ.",
+  "image": null,
+  "order": 20,
+  "visible": true
+}

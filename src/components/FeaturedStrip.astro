@@ -1,0 +1,70 @@
+---
+// Dải "Sản phẩm nổi bật": các thẻ trượt ngang, có mũi tên, tự chạy chậm
+import Icon from './Icon.astro';
+import ProductCard from './ProductCard.astro';
+import type { Product } from '../lib/data';
+
+interface Props { products: Product[] }
+const items = Astro.props.products.filter(p => p.data.featured);
+---
+{items.length > 0 && (
+  <section class="section featured" id="noi-bat" aria-label="Sản phẩm nổi bật">
+    <div class="container">
+      <div class="section-head section-head-row" data-reveal>
+        <div>
+          <p class="eyebrow">Nổi bật</p>
+          <h2>Sản phẩm nổi bật</h2>
+        </div>
+        {items.length > 1 && (
+          <div class="strip-nav">
+            <button class="strip-arrow strip-prev" type="button" aria-label="Xem mẫu trước"><Icon name="left" /></button>
+            <button class="strip-arrow strip-next" type="button" aria-label="Xem mẫu tiếp theo"><Icon name="right" /></button>
+          </div>
+        )}
+      </div>
+      <div class="strip" data-interval="4500">
+        {items.map(p => <ProductCard product={p} vt={false} />)}
+      </div>
+    </div>
+  </section>
+)}
+
+<script>
+  import { $, $$, reduceMotion } from '../scripts/util';
+
+  const strip = $('.strip');
+  if (strip) {
+    const cards = $$('.card', strip);
+    const INTERVAL = Number(strip.dataset.interval) || 4500;
+    const step = () => (cards[1] ? cards[1].offsetLeft - cards[0].offsetLeft : strip.clientWidth);
+    const atEnd = () => strip.scrollLeft + strip.clientWidth >= strip.scrollWidth - 4;
+    const behavior: ScrollBehavior = reduceMotion ? 'auto' : 'smooth';
+
+    // Hết thì quay lại đầu, để mũi tên và tự chạy không bao giờ "kẹt"
+    const next = () => (atEnd() ? strip.scrollTo({ left: 0, behavior }) : strip.scrollBy({ left: step(), behavior }));
+    const prev = () => (strip.scrollLeft <= 4 ? strip.scrollTo({ left: strip.scrollWidth, behavior }) : strip.scrollBy({ left: -step(), behavior }));
+
+    let timer: number | undefined;
+    const paused = new Set<string>();
+    const start = () => {
+      clearInterval(timer);
+      if (reduceMotion || paused.size || strip.scrollWidth <= strip.clientWidth + 4) return;
+      timer = window.setInterval(next, INTERVAL);
+    };
+    const pause = (why: string) => { paused.add(why); clearInterval(timer); };
+    const resume = (why: string) => { paused.delete(why); start(); };
+
+    $('.strip-next')?.addEventListener('click', () => { next(); start(); });
+    $('.strip-prev')?.addEventListener('click', () => { prev(); start(); });
+    strip.addEventListener('pointerenter', e => { if (e.pointerType === 'mouse') pause('hover'); });
+    strip.addEventListener('pointerleave', () => resume('hover'));
+    strip.addEventListener('focusin', () => pause('focus'));
+    strip.addEventListener('focusout', () => resume('focus'));
+    // Khách tự vuốt thì dừng tự chạy một lúc
+    strip.addEventListener('touchstart', () => { pause('touch'); setTimeout(() => resume('touch'), 8000); }, { passive: true });
+    document.addEventListener('visibilitychange', () => (document.hidden ? pause('tab') : resume('tab')));
+    new IntersectionObserver(([e]) => (e.isIntersecting ? resume('offscreen') : pause('offscreen'))).observe(strip);
+    addEventListener('resize', start);
+    start();
+  }
+</script>

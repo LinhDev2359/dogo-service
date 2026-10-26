@@ -1,0 +1,41 @@
+---
+import Media from './Media.astro';
+import WoodSwatch from './WoodSwatch.astro';
+import { CATEGORIES, STATUS, fold, type Product } from '../lib/data';
+
+interface Props { product: Product; vt?: boolean }
+const { product: p, vt = true } = Astro.props;
+const d = p.data;
+const woods = p.woodList;
+const searchText = fold([d.name, CATEGORIES[d.category], STATUS[d.status].label, ...woods.map(w => w.data.name), d.material, d.size, p.body].join(' '));
+---
+<article
+  class="card"
+  data-reveal
+  data-cat={d.category}
+  data-status={d.status}
+  data-woods={woods.map(w => w.id).join(' ')}
+  data-text={searchText}
+  style={vt ? `view-transition-name: p-${p.id}` : undefined}
+>
+  <a class="card-link" href={p.url}>
+    <div class="card-media">
+      <Media src={d.images[0]} alt={d.name} ph={p.ph} style={vt ? `view-transition-name: img-${p.id}` : undefined} />
+      {d.images[1] && <Media src={d.images[1]} ph={p.ph} class="card-img-alt" />}
+      <span class:list={['badge', `badge-${d.status}`]}>{STATUS[d.status].label}</span>
+      {d.images.length > 1 && <span class="card-count">{d.images.length} ảnh</span>}
+      <span class="card-cta" aria-hidden="true">Xem chi tiết</span>
+    </div>
+    <div class="card-body">
+      <p class="card-cat">{CATEGORIES[d.category]}</p>
+      <h3>{d.name}</h3>
+      {woods.length > 0 && (
+        <p class="card-woods">
+          <span class="swatch-stack">{woods.slice(0, 3).map(w => <WoodSwatch wood={w} />)}</span>
+          <span>{woods.map(w => w.data.name).join(' · ')}</span>
+        </p>
+      )}
+      <p class="card-price">{p.price}</p>
+    </div>
+  </a>
+</article>

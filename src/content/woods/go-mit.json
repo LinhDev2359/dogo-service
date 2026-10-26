@@ -1,0 +1,14 @@
+{
+  "name": "Gỗ mít",
+  "tone": "#b07a2c",
+  "summary": "Gỗ màu vàng, chuyển dần sang nâu đỏ theo thời gian.",
+  "traits": [
+    "Màu vàng, lên màu nâu đỏ khi dùng lâu",
+    "Nhẹ, dễ chạm khắc",
+    "Ít mối mọt"
+  ],
+  "uses": "Thường dùng cho đồ thờ, tượng, hoành phi câu đối.",
+  "image": null,
+  "order": 30,
+  "visible": true
+}

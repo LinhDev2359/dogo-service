@@ -1,0 +1,158 @@
+---
+// Banner đầu trang: tự chạy qua các sản phẩm được bật "Hiện trên banner lớn" trong trang quản trị
+import Icon from './Icon.astro';
+import Media from './Media.astro';
+import { CATEGORIES, STATUS, contactLinks, paragraphs, type Product, type Site } from '../lib/data';
+
+interface Props { products: Product[]; site: Site }
+const { products, site } = Astro.props;
+// Banner lớn: mẫu bật "Hiện trên banner lớn"; chưa chọn mẫu nào thì lấy mẫu nổi bật
+let featured = products.filter(p => p.data.banner);
+if (!featured.length) featured = products.filter(p => p.data.featured).slice(0, 4);
+if (!featured.length) featured = products.slice(0, 4);
+const tel = contactLinks(site).tel;
+const heroSizes = '100vw';
+---
+<section class="hero" id="hero" aria-roledescription="carousel" aria-label="Sản phẩm nổi bật" data-interval="6000">
+  <h1 class="sr-only">{site.brand} – {site.intro_title}</h1>
+  <div class="hero-track">
+    {featured.length === 0 && (
+      <div class="slide is-active">
+        <div class="slide-bg"><span class="ph ph-hero-1"></span></div>
+        <div class="container slide-content">
+          <p class="eyebrow">{site.tagline}</p>
+          <p class="slide-title">{site.intro_title}</p>
+          <p class="lead">{site.intro_text}</p>
+          <div class="hero-actions">
+            <a href="/san-pham/" class="btn btn-light">Xem mẫu sản phẩm</a>
+            <a href="#lien-he" class="btn btn-ghost">Nhận tư vấn</a>
+          </div>
+        </div>
+      </div>
+    )}
+    {featured.map((p, i) => {
+      const d = p.data;
+      const info = [d.material, d.size].filter(Boolean).join(' · ');
+      return (
+        <article class:list={['slide', { 'is-active': i === 0 }]} role="group" aria-roledescription="slide"
+          aria-label={`${i + 1} / ${featured.length}: ${d.name}`} aria-hidden={i === 0 ? 'false' : 'true'}>
+          <div class="slide-bg">
+            <Media src={d.images[0]} ph={`hero-${(i % 3) + 1}`} widths={[800, 1280, 1920]} sizes={heroSizes}
+              priority={i === 0} />
+          </div>
+          <div class="container slide-content">
+            <p class="eyebrow">Sản phẩm nổi bật · {CATEGORIES[d.category]}</p>
+            <h2 class="slide-title">{d.name}</h2>
+            <p class="slide-meta">
+              <span class:list={['badge', `badge-${d.status}`]}>{STATUS[d.status].label}</span>
+              {info && <span>{info}</span>}
+            </p>
+            <p class="lead">{paragraphs(p.body)[0] || STATUS[d.status].note}</p>
+            <div class="hero-actions">
+              <a class="btn btn-light" href={p.url}>Xem chi tiết</a>
+              <a class="btn btn-ghost" href={tel}>Gọi hỏi giá</a>
+            </div>
+          </div>
+        </article>
+      );
+    })}
+  </div>
+  {featured.length > 1 && (
+    <div class="container hero-controls">
+      <span class="hero-count" aria-hidden="true">01 / {String(featured.length).padStart(2, '0')}</span>
+      <div class="hero-dots">
+        {featured.map((_, i) => (
+          <button type="button" class="dot" aria-label={`Xem sản phẩm ${i + 1}`} aria-current={i === 0 ? 'true' : 'false'}></button>
+        ))}
+      </div>
+      <button class="hero-arrow hero-prev" type="button" aria-label="Sản phẩm trước"><Icon name="left" /></button>
+      <button class="hero-arrow hero-next" type="button" aria-label="Sản phẩm tiếp theo"><Icon name="right" /></button>
+    </div>
+  )}
+</section>
+
+<script>
+  import { $, $$, reduceMotion, addSwipe } from '../scripts/util';
+
+  const hero = $('#hero');
+  const slides = hero ? $$('.slide', hero) : [];
+  if (hero && slides.length > 1) {
+    const INTERVAL = Number(hero.dataset.interval) || 6000;
+    const dots = $$('.dot', hero);
+    const count = $('.hero-count', hero)!;
+    const pad = (n: number) => String(n).padStart(2, '0');
+    const auto = !reduceMotion;
+    hero.style.setProperty('--slide-ms', INTERVAL + 'ms');
+    hero.classList.toggle('is-auto', auto);
+
+    let index = 0;
+    let timer: number | undefined;
+    let startedAt = 0;
+    let remaining = INTERVAL;
+    const paused = new Set<string>();
+
+    // Slide mới vào từ một phía, slide cũ trượt ra phía ngược lại
+    function show(n: number, dir: number) {
+      const next = (n + slides.length) % slides.length;
+      if (next === index) return false;
+      const old = slides[index];
+      const neu = slides[next];
+      neu.classList.remove('leave-left', 'leave-right');
+      neu.style.transition = 'none';
+      neu.style.transform = `translateX(${dir * 100}%)`;
+      neu.style.visibility = 'visible';
+      void neu.offsetWidth;
+      neu.style.transition = neu.style.transform = neu.style.visibility = '';
+      neu.classList.add('is-active');
+      old.classList.remove('is-active');
+      old.classList.add(dir > 0 ? 'leave-left' : 'leave-right');
+      index = next;
+      slides.forEach((s, i) => s.setAttribute('aria-hidden', String(i !== index)));
+      dots.forEach((d, i) => d.setAttribute('aria-current', String(i === index)));
+      count.textContent = pad(index + 1) + ' / ' + pad(slides.length);
+      return true;
+    }
+    function start() {
+      clearTimeout(timer);
+      timer = undefined;
+      if (!auto || paused.size) return;
+      hero!.classList.remove('is-paused');
+      startedAt = Date.now();
+      timer = window.setTimeout(() => go(index + 1, 1), remaining);
+    }
+    function pause(why: string) {
+      paused.add(why);
+      hero!.classList.add('is-paused');
+      if (timer !== undefined) {
+        clearTimeout(timer);
+        timer = undefined;
+        remaining = Math.max(0, remaining - (Date.now() - startedAt));
+      }
+    }
+    function resume(why: string) {
+      paused.delete(why);
+      if (!paused.size) start();
+    }
+    function go(n: number, dir: number) {
+      if (!show(n, dir)) return;
+      remaining = INTERVAL;
+      start();
+    }
+
+    dots.forEach((d, i) => d.addEventListener('click', () => go(i, i > index ? 1 : -1)));
+    $('.hero-prev', hero)!.addEventListener('click', () => go(index - 1, -1));
+    $('.hero-next', hero)!.addEventListener('click', () => go(index + 1, 1));
+    hero.addEventListener('pointerenter', e => { if (e.pointerType === 'mouse') pause('hover'); });
+    hero.addEventListener('pointerleave', () => resume('hover'));
+    hero.addEventListener('focusin', () => pause('focus'));
+    hero.addEventListener('focusout', () => resume('focus'));
+    hero.addEventListener('keydown', e => {
+      if (e.key === 'ArrowLeft') go(index - 1, -1);
+      if (e.key === 'ArrowRight') go(index + 1, 1);
+    });
+    document.addEventListener('visibilitychange', () => (document.hidden ? pause('tab') : resume('tab')));
+    new IntersectionObserver(([e]) => (e.isIntersecting ? resume('offscreen') : pause('offscreen'))).observe(hero);
+    addSwipe(hero, dir => go(index + dir, dir));
+    start();
+  }
+</script>

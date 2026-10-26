@@ -1,0 +1,41 @@
+{
+  "brand": "Doanh Tuyết",
+  "tagline": "Đồ gỗ · Nội thất · Mỹ nghệ",
+  "story_title": "Cơ sở đồ gỗ mang tên bố mẹ",
+  "story_text": "Doanh Tuyết là cửa hàng và xưởng đồ gỗ của gia đình, do chính bố mẹ chúng tôi trực tiếp tư vấn, nhận đặt làm và theo sát từng sản phẩm.\n\n[Phần này để gia đình bổ sung: cửa hàng bắt đầu từ khi nào, kinh nghiệm của xưởng, điều gia đình tâm đắc nhất khi làm nghề.]",
+  "story_image": "",
+  "gallery": [
+    {
+      "image": "",
+      "caption": "Không gian cửa hàng"
+    },
+    {
+      "image": "",
+      "caption": "Xưởng sản xuất"
+    },
+    {
+      "image": "",
+      "caption": "Mẫu trưng bày"
+    },
+    {
+      "image": "",
+      "caption": "Chi tiết chạm khắc"
+    },
+    {
+      "image": "",
+      "caption": "Hoàn thiện sản phẩm"
+    },
+    {
+      "image": "",
+      "caption": "Sản phẩm trước khi giao"
+    }
+  ],
+  "phone": "0900 000 000",
+  "zalo": "0900000000",
+  "messenger": "https://m.me/TEN-TRANG-FACEBOOK",
+  "facebook": "https://www.facebook.com/TEN-TRANG-FACEBOOK",
+  "address": "[Số nhà, đường, xã/phường, tỉnh/thành – cần bổ sung]",
+  "hours": "[Giờ mở cửa – cần bổ sung]",
+  "maps_url": "",
+  "maps_embed": ""
+}

@@ -1,0 +1,14 @@
+{
+  "name": "Gỗ gụ",
+  "tone": "#4a2a17",
+  "summary": "Gỗ màu nâu sẫm, thớ mịn, nặng và chắc tay.",
+  "traits": [
+    "Màu nâu sẫm, càng dùng càng lên màu",
+    "Thớ mịn, ít cong vênh",
+    "Nặng, chắc"
+  ],
+  "uses": "Thường dùng cho bàn thờ, sập, tủ chè, bàn ghế cổ.",
+  "image": null,
+  "order": 10,
+  "visible": true
+}

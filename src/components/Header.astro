@@ -1,0 +1,38 @@
+---
+import { Image } from 'astro:assets';
+import Icon from './Icon.astro';
+import { CATEGORIES, contactLinks, type Site } from '../lib/data';
+import logoMark from '../assets/brand/logo-mark.png';
+import logoWord from '../assets/brand/logo-wordmark.png';
+
+interface Props { site: Site }
+const { site } = Astro.props;
+const links = contactLinks(site);
+---
+<header class="site-header" id="header">
+  <div class="container header-row">
+    <a href="/" class="logo" aria-label={`${site.brand} – trang chủ`}>
+      <Image class="logo-mark" src={logoMark} alt="" height={48} densities={[1, 2]} loading="eager" />
+      <Image class="logo-word" src={logoWord} alt="" height={40} densities={[1, 2]} loading="eager" />
+    </a>
+    <nav id="nav" class="nav" aria-label="Điều hướng chính">
+      <div class="nav-item">
+        <a href="/san-pham/" data-nav="san-pham">Sản phẩm<Icon name="down" class="ic-down" /></a>
+        <div class="subnav">
+          {Object.entries(CATEGORIES).map(([key, label]) => (
+            <a href={`/san-pham/?danh-muc=${key}`} data-filter={key}>{label}</a>
+          ))}
+        </div>
+      </div>
+      <a href="/chat-lieu-go/" data-nav="chat-lieu">Chất liệu gỗ</a>
+      <a href="/#xuong" data-nav="xuong">Cửa hàng &amp; xưởng</a>
+      <a href="/#quy-trinh" data-nav="quy-trinh">Đặt làm</a>
+      <a href="/#lien-he" data-nav="lien-he">Liên hệ</a>
+    </nav>
+    <a class="icon-btn" href="/san-pham/#tim-kiem" aria-label="Tìm mẫu sản phẩm"><Icon name="search" /></a>
+    <a href={links.tel} class="btn btn-small header-call"><Icon name="phone" /><span>{site.phone}</span></a>
+    <button class="nav-toggle" type="button" aria-label="Mở menu" aria-expanded="false" aria-controls="nav">
+      <span></span><span></span><span></span>
+    </button>
+  </div>
+</header>
