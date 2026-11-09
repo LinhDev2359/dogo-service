@@ -9,7 +9,7 @@ Mẹo: tắt "Hiển thị trên web" để ẩn sản phẩm tạm thời mà k
 Ảnh sản phẩm nên là ảnh ngang (tỉ lệ 4:3), dưới 500 KB cho tải nhanh. Ảnh đầu tiên là ảnh đại diện.
 Mỗi sản phẩm có ô **Tình trạng**: Nhận đặt làm / Có sẵn / Mẫu trưng bày tại cửa hàng.
 
-Banner đầu trang tự chạy qua các sản phẩm được bật ô **Nổi bật** (nên chọn 3–5 mẫu có ảnh đẹp, ảnh ngang rộng từ 1600px).
+Banner đầu trang tự chạy qua các sản phẩm được bật ô **Nổi bật** (nên chọn 3-5 mẫu có ảnh đẹp, ảnh ngang rộng từ 1600px).
 Nếu chưa chọn mẫu nào, banner lấy 4 sản phẩm đầu danh sách.
 
 Trong **Thông tin chung** có thể đổi: ảnh cửa hàng & xưởng,
@@ -17,7 +17,7 @@ link Messenger/Facebook (để trống thì nút tự ẩn), link Google Maps v�
 
 Form "Để lại số điện thoại" dùng Netlify Forms: khi web chạy trên Netlify, yêu cầu của khách hiện ở
 Netlify → Forms; bật thông báo email tại Site configuration → Forms → Form notifications.
-Khi chạy thử trên máy, form sẽ báo "Chưa gửi được" – đó là bình thường.
+Khi chạy thử trên máy, form sẽ báo "Chưa gửi được", đó là bình thường.
 
 ## Cài đặt lần đầu (làm một lần)
 1. Tạo tài khoản GitHub, tạo repo mới (ví dụ `go-viet-web`), đẩy toàn bộ thư mục `website` lên.

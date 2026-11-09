@@ -32,13 +32,17 @@
       "caption": "Sản phẩm trước khi giao"
     }
   ],
-  "phone": "0900 000 000",
-  "zalo": "0900000000",
-  "messenger": "https://m.me/TEN-TRANG-FACEBOOK",
-  "facebook": "https://www.facebook.com/TEN-TRANG-FACEBOOK",
-  "address": "[Số nhà, đường, xã/phường, tỉnh/thành – cần bổ sung]",
-  "hours": "[Giờ mở cửa – cần bổ sung]",
-  "maps_url": "",
-  "maps_embed": "",
-  "form_key": ""
+  "phone": "0914 864 108",
+  "zalo": "0914864108",
+  "messenger": "https://m.me/truong.doanh.79",
+  "facebook": "https://www.facebook.com/truong.doanh.79",
+  "address": "Gần nhà văn hóa xóm Ngọc Lôi, thôn Đình Ngọc, xã Thư Lâm, thành phố Hà Nội",
+  "hours": "7:00 - 22:00, tất cả các ngày",
+  "maps_url": "https://www.google.com/maps/place/%C4%90%E1%BB%93+g%E1%BB%97+m%E1%BB%B9+ngh%E1%BB%87+Doanh+Tuy%E1%BA%BFt/@21.0522141,105.6747517,12z/data=!4m10!1m2!2m1!1zxJHhu5MgZ-G7lyBt4bu5IG5naOG7hyBkb2FuaCB0dXnhur90!3m6!1s0x3135076c121fb2f9:0x3a8430daacb29d9b!8m2!3d21.1326045!4d105.9130532!15sCiTEkeG7kyBn4buXIG3hu7kgbmdo4buHIGRvYW5oIHR1eeG6v3SSAQ9mdXJuaXR1cmVfc3RvcmXgAQA!16s%2Fg%2F11z_072cct?entry=ttu&g_ep=EgoyMDI2MTEwMy4wIKXMDSoASAFQAw%3D%3D",
+  "maps_embed": "<iframe src=\"https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d119152.37550298705!2d105.67475165916062!3d21.052214063035276!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x3135076c121fb2f9%3A0x3a8430daacb29d9b!2zxJDhu5MgZ-G7lyBt4bu5IG5naOG7hyBEb2FuaCBUdXnhur90!5e0!3m2!1sen!2s!4v1794235473689!5m2!1sen!2s\" width=\"600\" height=\"450\" style=\"border:0;\" allowfullscreen=\"\" loading=\"lazy\" referrerpolicy=\"strict-origin-when-cross-origin\"></iframe>",
+  "form_key": "ce8b5882-c8cf-4583-92ae-34040a8dfd02",
+  "lead_time": "",
+  "warranty": "",
+  "delivery": "",
+  "payment": ""
 }

@@ -197,7 +197,7 @@ p { margin: 0 0 1em; }
 .hero-arrow:hover { background: rgba(255,255,255,.18); border-color: #fff; }
 .hero-prev { margin-left: 8px; }
 .hero-dots { display: flex; gap: 4px; }
-.dot { width: 48px; height: 28px; padding: 0; border: 0; background: none; cursor: pointer; position: relative; }
+.dot { width: 48px; height: 44px; padding: 0; border: 0; background: none; cursor: pointer; position: relative; }
 .dot::before, .dot::after { content: ""; position: absolute; left: 0; right: 10px; top: 50%; height: 2px; margin-top: -1px; }
 .dot::before { background: rgba(255,255,255,.35); }
 .dot::after { background: #fff; transform: scaleX(0); transform-origin: left; }
@@ -316,8 +316,8 @@ p { margin: 0 0 1em; }
 }
 .card-link:hover .card-cta, .card-link:focus-visible .card-cta { opacity: 1; scale: 1; }
 .card-body { padding: 14px 16px 18px; display: flex; flex-direction: column; flex: 1; }
-.card-cat { font-size: .75rem; letter-spacing: .08em; text-transform: uppercase; color: var(--wood-500); margin: 0 0 4px; }
-.card-body h3 { flex: 1; }
+.card-cat { font-size: .75rem; letter-spacing: .08em; text-transform: uppercase; color: var(--wood-700); margin: 0 0 4px; }
+.card-title { flex: 1; font-size: 1.1rem; margin: 0 0 .2em; }
 .card-price { font-weight: 600; color: var(--wood-700); margin: 6px 0 0; font-size: .95rem; }
 .badge {
   display: inline-block; padding: 4px 10px; border-radius: 999px; font-size: .74rem; font-weight: 600; letter-spacing: .02em;
@@ -325,7 +325,7 @@ p { margin: 0 0 1em; }
 }
 .card-media .badge { position: absolute; left: 10px; top: 10px; box-shadow: 0 2px 8px rgba(0,0,0,.18); }
 .badge-co-san { background: var(--green); color: #fff; }
-.badge-trung-bay { background: var(--gold); color: #fff; }
+.badge-trung-bay { background: #8a6a2f; color: #fff; }
 .more-wrap { text-align: center; margin-top: 32px; }
 
 /* Story */
@@ -479,6 +479,12 @@ p { margin: 0 0 1em; }
 .pm-price-box { margin-top: 20px; padding: 16px 18px; border-radius: var(--radius); background: var(--wood-100); }
 .pm-price { font-size: 1.25rem; font-weight: 600; color: var(--wood-700); margin: 0 0 2px; }
 .pm-price-box .pm-note { margin: 0; }
+.pm-policies { margin-top: 24px; padding-top: 20px; border-top: 1px solid var(--wood-200); }
+.pm-policies ul { list-style: none; margin: 12px 0 0; padding: 0; display: grid; gap: 14px; }
+.pm-policies li { display: grid; grid-template-columns: 22px 1fr; gap: 12px; align-items: start; }
+.pm-policies .ic { width: 20px; height: 20px; margin-top: 2px; color: var(--wood-500); }
+.pm-policies b { display: block; font-size: .95rem; color: var(--wood-900); }
+.pm-policies span { display: block; font-size: .9rem; color: var(--muted); }
 
 /* Chất liệu gỗ ở trang chi tiết */
 .pm-woods { margin: 4px 0 20px; }
@@ -649,7 +655,7 @@ main img { transition: opacity .5s var(--ease), transform .7s var(--ease); }
   .hero-actions .btn { flex: 1 1 0; padding-inline: 12px; }
   .hero-arrow { display: none; }
   .hero-controls { bottom: 20px; }
-  .dot { width: 36px; }
+  .dot { width: 44px; }
   .highlights-grid { gap: 16px; padding: 22px 0; }
   .highlights-grid span { font-size: .8rem; }
   .product-grid { gap: 12px; }
@@ -678,7 +684,7 @@ main img { transition: opacity .5s var(--ease), transform .7s var(--ease); }
   .select select { min-width: 0; width: 100%; text-overflow: ellipsis; }
   .result-count { font-size: .82rem; }
   .card-body { padding: 10px 12px 14px; }
-  .card-body h3 { font-size: .95rem; }
+  .card-title { font-size: .95rem; }
   .card-cat { font-size: .66rem; }
   .card-price { font-size: .85rem; }
   .card-media .badge { font-size: .66rem; padding: 3px 8px; left: 8px; top: 8px; }

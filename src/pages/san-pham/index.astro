@@ -54,13 +54,13 @@ const links = contactLinks(site);
       </div>
 
       <div class="product-grid" id="product-grid">
-        {products.map(p => <ProductCard product={p} />)}
+        {products.map(p => <ProductCard product={p} heading="h2" />)}
       </div>
 
       <div class="empty-state" hidden={products.length > 0}>
         <Icon name="search" />
         <p class="empty-title">{products.length ? 'Chưa tìm thấy mẫu phù hợp' : 'Chưa có sản phẩm trên web'}</p>
-        <p>Thử từ khóa khác hoặc xóa bộ lọc. Cửa hàng còn nhiều mẫu chưa đăng lên web – hãy gọi hoặc nhắn Zalo để hỏi.</p>
+        <p>Thử từ khóa khác hoặc xóa bộ lọc. Cửa hàng còn nhiều mẫu chưa đăng lên web. Hãy gọi hoặc nhắn Zalo để hỏi.</p>
         <div class="empty-actions">
           <button class="btn search-all" type="button" hidden>Xem ở mọi danh mục</button>
           <button class="btn btn-outline clear-filters" type="button">Xóa bộ lọc</button>
