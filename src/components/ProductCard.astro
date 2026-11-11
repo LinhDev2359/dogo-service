@@ -3,8 +3,8 @@ import Media from './Media.astro';
 import WoodSwatch from './WoodSwatch.astro';
 import { CATEGORIES, STATUS, fold, type Product } from '../lib/data';
 
-interface Props { product: Product; vt?: boolean }
-const { product: p, vt = true } = Astro.props;
+interface Props { product: Product; vt?: boolean; heading?: 'h2' | 'h3' }
+const { product: p, vt = true, heading: Heading = 'h3' } = Astro.props;
 const d = p.data;
 const woods = p.woodList;
 const searchText = fold([d.name, CATEGORIES[d.category], STATUS[d.status].label, ...woods.map(w => w.data.name), d.material, d.size, p.body].join(' '));
@@ -28,11 +28,11 @@ const searchText = fold([d.name, CATEGORIES[d.category], STATUS[d.status].label,
     </div>
     <div class="card-body">
       <p class="card-cat">{CATEGORIES[d.category]}</p>
-      <h3>{d.name}</h3>
+      <Heading class="card-title">{d.name}</Heading>
       {woods.length > 0 && (
         <p class="card-woods">
           <span class="swatch-stack">{woods.slice(0, 3).map(w => <WoodSwatch wood={w} />)}</span>
-          <span>{woods.map(w => w.data.name).join(' · ')}</span>
+          <span>{woods.map(w => w.data.name).join(', ')}</span>
         </p>
       )}
       <p class="card-price">{p.price}</p>

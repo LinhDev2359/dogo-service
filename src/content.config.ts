@@ -60,6 +60,11 @@ const settings = defineCollection({
     maps_url: z.string().nullish(),
     maps_embed: z.string().nullish(),
     form_key: z.string().nullish(),
+    // Khung chính sách ở trang sản phẩm; để trống thì hiện câu mặc định "trao đổi khi tư vấn"
+    lead_time: z.string().nullish(),
+    warranty: z.string().nullish(),
+    delivery: z.string().nullish(),
+    payment: z.string().nullish(),
   }),
 });
 

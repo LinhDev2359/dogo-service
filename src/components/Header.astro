@@ -11,7 +11,7 @@ const links = contactLinks(site);
 ---
 <header class="site-header" id="header">
   <div class="container header-row">
-    <a href="/" class="logo" aria-label={`${site.brand} – trang chủ`}>
+    <a href="/" class="logo" aria-label={`${site.brand}, trang chủ`}>
       <Image class="logo-mark" src={logoMark} alt="" height={48} densities={[1, 2]} loading="eager" />
       <Image class="logo-word" src={logoWord} alt="" height={40} densities={[1, 2]} loading="eager" />
     </a>
@@ -30,7 +30,7 @@ const links = contactLinks(site);
       <a href="/#lien-he" data-nav="lien-he">Liên hệ</a>
     </nav>
     <a class="icon-btn" href="/san-pham/#tim-kiem" aria-label="Tìm mẫu sản phẩm"><Icon name="search" /></a>
-    <a href={links.tel} class="btn btn-small header-call"><Icon name="phone" /><span>{site.phone}</span></a>
+    <a href={links.tel} class="btn btn-small header-call" aria-label={`Gọi ${site.phone}`}><Icon name="phone" /><span>{site.phone}</span></a>
     <button class="nav-toggle" type="button" aria-label="Mở menu" aria-expanded="false" aria-controls="nav">
       <span></span><span></span><span></span>
     </button>

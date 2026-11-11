@@ -110,7 +110,7 @@ function shell(o: { title: string; back?: string; tab?: Tab; body: Raw; savebar?
       <h1>${o.title}</h1>
       ${o.action || ''}
     </header>
-    ${backend?.mode === 'local' ? raw('<p class="ad-mode">Đang chạy thử trên máy – thay đổi lưu thẳng vào file dự án</p>') : ''}
+    ${backend?.mode === 'local' ? raw('<p class="ad-mode">Đang chạy thử trên máy: thay đổi lưu thẳng vào file dự án</p>') : ''}
     <main class="ad-main">${o.body}</main>
     ${o.savebar
       ? html`<div class="ad-savebar">${o.savebar}</div>`
@@ -132,7 +132,7 @@ function setSaving(btn: HTMLButtonElement, on: boolean, label = 'Lưu') {
 }
 
 const savedMsg = () => backend.mode === 'github'
-  ? 'Đã lưu. Web sẽ cập nhật sau khoảng 1–2 phút.'
+  ? 'Đã lưu. Web sẽ cập nhật sau khoảng 1-2 phút.'
   : 'Đã lưu vào máy.';
 
 // ---------- Đăng nhập ----------
@@ -215,7 +215,7 @@ function viewProducts() {
         <span class="ad-thumb">${first ? html`<img data-path="${assetPath(DIRS.products, first)}" alt="">` : icon('camera')}</span>
         <span class="ad-row-text">
           <b>${p.data.name || '(chưa có tên)'}</b>
-          <small>${CATEGORIES[p.data.category as keyof typeof CATEGORIES] || ''} · ${STATUS[p.data.status as keyof typeof STATUS]?.label || ''}</small>
+          <small>${CATEGORIES[p.data.category as keyof typeof CATEGORIES] || ''}, ${STATUS[p.data.status as keyof typeof STATUS]?.label || ''}</small>
           ${tags.length ? html`<span class="ad-tags">${tags}</span>` : ''}
         </span>
         ${icon('chev')}
@@ -364,7 +364,7 @@ function viewProduct(id: string | null) {
           <h2>Hiển thị</h2>
           ${toggle('visible', 'Hiện trên web', 'Tắt để ẩn tạm, không cần xóa', d.visible !== false)}
           ${toggle('featured', 'Sản phẩm nổi bật', 'Hiện trong dải nổi bật ở trang chủ (nên chọn khoảng 5 mẫu)', !!d.featured)}
-          ${toggle('banner', 'Hiện trên banner lớn', 'Chạy ở đầu trang chủ (nên chọn 3–4 mẫu ảnh đẹp nhất)', !!d.banner)}
+          ${toggle('banner', 'Hiện trên banner lớn', 'Chạy ở đầu trang chủ (nên chọn 3-4 mẫu ảnh đẹp nhất)', !!d.banner)}
           <label class="ad-field"><span>Thứ tự hiển thị</span>
             <input name="order" type="number" inputmode="numeric" value="${d.order ?? ''}" placeholder="Số nhỏ hiện trước">
           </label>
@@ -434,7 +434,7 @@ function viewProduct(id: string | null) {
       await backend.commit(`Xóa sản phẩm: ${item.data.name}`, [], [item.path, ...ownImages]);
       products = products.filter(p => p !== item);
       dirty = false;
-      toast(backend.mode === 'github' ? 'Đã xóa. Web sẽ cập nhật sau khoảng 1–2 phút.' : 'Đã xóa.');
+      toast(backend.mode === 'github' ? 'Đã xóa. Web sẽ cập nhật sau khoảng 1-2 phút.' : 'Đã xóa.');
       location.hash = '#/san-pham';
     } catch (err) { toast('Chưa xóa được: ' + (err as Error).message, 'err'); }
   });
@@ -458,7 +458,7 @@ function viewWoods() {
       <ul class="ad-list">
         ${woodsSorted().map(w => html`<li><a href="#/go/${w.id}" class="ad-row">
           <span class="ad-thumb">${w.data.image ? html`<img data-path="${assetPath(DIRS.woods, w.data.image)}" alt="">` : swatch(w.data.tone, 'fill')}</span>
-          <span class="ad-row-text"><b>${w.data.name}</b><small>Dùng ở ${used(w.id)} mẫu${w.data.visible === false ? ' · Đang ẩn' : ''}</small></span>
+          <span class="ad-row-text"><b>${w.data.name}</b><small>Dùng ở ${used(w.id)} mẫu${w.data.visible === false ? ', Đang ẩn' : ''}</small></span>
           ${icon('chev')}
         </a></li>`)}
         ${woods.length ? '' : html`<li class="ad-empty">Chưa có loại gỗ nào.</li>`}
@@ -601,7 +601,7 @@ function viewSettings() {
           ${field('phone', 'Số điện thoại', '', 'tel', 'inputmode="tel"')}
           ${field('zalo', 'Số Zalo', 'Chỉ chữ số. Để trống sẽ dùng số điện thoại.', 'tel', 'inputmode="numeric"')}
           ${field('address', 'Địa chỉ cửa hàng')}
-          ${field('hours', 'Giờ mở cửa', 'VD: 7:30 – 18:00, tất cả các ngày')}
+          ${field('hours', 'Giờ mở cửa', 'VD: 7:30 - 18:00, tất cả các ngày')}
           ${field('messenger', 'Link Messenger', 'VD: https://m.me/ten-trang. Để trống sẽ ẩn nút Messenger.', 'url')}
           ${field('facebook', 'Link trang Facebook', '', 'url')}
         </section>
@@ -626,6 +626,14 @@ function viewSettings() {
           <p class="ad-hint">Ảnh đầu tiên hiện to nhất. Nên dùng ảnh thật tại cửa hàng, xưởng.</p>
           <div id="gallery"></div>
           <button type="button" class="ad-btn ad-btn-ghost ad-block" id="add-g">${icon('plus')}Thêm ảnh</button>
+        </section>
+        <section class="ad-card">
+          <h2>Chính sách (hiện ở trang sản phẩm)</h2>
+          <p class="ad-hint">Để trống ô nào thì web hiện câu "trao đổi khi tư vấn" cho mục đó.</p>
+          ${field('lead_time', 'Thời gian làm', 'VD: Bàn thờ thường 15 đến 30 ngày, tùy mẫu và kích thước')}
+          ${field('warranty', 'Bảo hành', 'VD: Bảo hành kết cấu 12 tháng, hỗ trợ sửa chữa trọn đời')}
+          ${field('delivery', 'Giao hàng, lắp đặt', 'VD: Giao và lắp tận nơi trong tỉnh, nơi khác tính theo khoảng cách')}
+          ${field('payment', 'Thanh toán', 'VD: Đặt cọc 30%, thanh toán nốt khi nhận hàng')}
         </section>
         <section class="ad-card">
           <h2>Form liên hệ</h2>
@@ -708,7 +716,7 @@ function viewSettings() {
         if (ref || g.caption.trim()) galleryOut.push({ image: ref || null, caption: g.caption.trim() });
       }
       const next = { ...site.data };
-      ['phone', 'zalo', 'address', 'hours', 'messenger', 'facebook', 'maps_url', 'maps_embed', 'intro_title', 'intro_text', 'story_title', 'story_text', 'form_key']
+      ['phone', 'zalo', 'address', 'hours', 'messenger', 'facebook', 'maps_url', 'maps_embed', 'intro_title', 'intro_text', 'story_title', 'story_text', 'form_key', 'lead_time', 'warranty', 'delivery', 'payment']
         .forEach(k => (next[k] = String(fd.get(k) ?? '').trim()));
       next.story_image = storyRef || null;
       next.gallery = galleryOut;

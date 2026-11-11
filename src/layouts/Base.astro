@@ -14,10 +14,16 @@ interface Props {
 }
 const site = await getSite();
 const { title, description, image, type = 'website' } = Astro.props;
-const fullTitle = title ? `${title} | ${site.brand}` : `${site.brand} – Đồ gỗ, nội thất & đồ thờ`;
+const fullTitle = title ? `${title} | ${site.brand}` : `${site.brand} | Đồ gỗ, nội thất & đồ thờ`;
 const desc = description || site.intro_text;
 const canonical = new URL(Astro.url.pathname, Astro.site);
 const ogImage = new URL(image || '/og-default.jpg', Astro.site).href;
+
+// Google cần giờ dạng "Mo-Su 07:00-22:00": chỉ tạo khi giờ mở cửa ghi rõ khung giờ và "tất cả các ngày"
+const hoursMatch = isPlaceholder(site.hours) ? null : site.hours!.match(/(\d{1,2}):(\d{2})\s*-\s*(\d{1,2}):(\d{2})/);
+const openingHours = hoursMatch && /tất cả các ngày/i.test(site.hours!)
+  ? `Mo-Su ${hoursMatch[1].padStart(2, '0')}:${hoursMatch[2]}-${hoursMatch[3].padStart(2, '0')}:${hoursMatch[4]}`
+  : undefined;
 
 // Dữ liệu cho Google: chỉ đưa vào những thông tin đã điền thật
 const localBusiness = {
@@ -30,7 +36,7 @@ const localBusiness = {
   description: site.intro_text,
   telephone: digits(site.phone) || undefined,
   address: isPlaceholder(site.address) ? undefined : site.address,
-  openingHours: isPlaceholder(site.hours) ? undefined : site.hours,
+  openingHours,
   sameAs: [site.facebook].filter(u => u && !u.includes('TEN-TRANG')),
 };
 ---

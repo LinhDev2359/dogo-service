@@ -14,7 +14,7 @@ const tel = contactLinks(site).tel;
 const heroSizes = '100vw';
 ---
 <section class="hero" id="hero" aria-roledescription="carousel" aria-label="Sản phẩm nổi bật" data-interval="6000">
-  <h1 class="sr-only">{site.brand} – {site.intro_title}</h1>
+  <h1 class="sr-only">{site.brand}: {site.intro_title}</h1>
   <div class="hero-track">
     {featured.length === 0 && (
       <div class="slide is-active">
@@ -32,16 +32,16 @@ const heroSizes = '100vw';
     )}
     {featured.map((p, i) => {
       const d = p.data;
-      const info = [d.material, d.size].filter(Boolean).join(' · ');
+      const info = [d.material, d.size].filter(Boolean).join(', ');
       return (
-        <article class:list={['slide', { 'is-active': i === 0 }]} role="group" aria-roledescription="slide"
+        <div class:list={['slide', { 'is-active': i === 0 }]} role="group" aria-roledescription="slide"
           aria-label={`${i + 1} / ${featured.length}: ${d.name}`} aria-hidden={i === 0 ? 'false' : 'true'}>
           <div class="slide-bg">
             <Media src={d.images[0]} ph={`hero-${(i % 3) + 1}`} widths={[800, 1280, 1920]} sizes={heroSizes}
               priority={i === 0} />
           </div>
           <div class="container slide-content">
-            <p class="eyebrow">Sản phẩm nổi bật · {CATEGORIES[d.category]}</p>
+            <p class="eyebrow">Sản phẩm nổi bật: {CATEGORIES[d.category]}</p>
             <h2 class="slide-title">{d.name}</h2>
             <p class="slide-meta">
               <span class:list={['badge', `badge-${d.status}`]}>{STATUS[d.status].label}</span>
@@ -53,7 +53,7 @@ const heroSizes = '100vw';
               <a class="btn btn-ghost" href={tel}>Gọi hỏi giá</a>
             </div>
           </div>
-        </article>
+        </div>
       );
     })}
   </div>

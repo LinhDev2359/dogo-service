@@ -1,4 +1,4 @@
-# Doanh Tuyết – website
+# Doanh Tuyết: website
 
 Website showroom cho cửa hàng & xưởng đồ gỗ gia đình Doanh Tuyết.
 
@@ -19,7 +19,7 @@ npm run check      # kiểm tra lỗi kiểu dữ liệu
 
 Cần Node 22.22 trở lên (xem `.node-version`).
 
-Trang quản trị khi chạy trên máy: `npm run dev` rồi mở `http://localhost:4321/admin/` – không cần đăng nhập, thay đổi lưu thẳng vào file dự án.
+Trang quản trị khi chạy trên máy: `npm run dev` rồi mở `http://localhost:4321/admin/`, không cần đăng nhập, thay đổi lưu thẳng vào file dự án.
 
 ## Cấu trúc
 
@@ -49,7 +49,7 @@ design/prototype/          Bản thiết kế HTML ban đầu, chỉ để tham 
 design/brand/              File logo gốc
 ```
 
-Nguyên tắc nội dung: không tự viết thông tin chưa được gia đình xác nhận (địa chỉ, lịch sử, loại gỗ, giá, năng lực sản xuất). Chỗ chưa có thông tin để dạng `[… – cần bổ sung]`.
+Nguyên tắc nội dung: không tự viết thông tin chưa được gia đình xác nhận (địa chỉ, lịch sử, loại gỗ, giá, năng lực sản xuất). Chỗ chưa có thông tin để dạng `[…, cần bổ sung]`.
 
 ## Triển khai lần đầu
 

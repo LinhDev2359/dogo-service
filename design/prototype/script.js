@@ -142,20 +142,20 @@ function applySite() {
   $$('[data-site-messenger]').forEach(a => { if (site.messenger) a.href = site.messenger; else a.hidden = true; });
   $$('[data-site-facebook]').forEach(a => { if (site.facebook) a.href = site.facebook; else a.hidden = true; });
 
-  if (site.brand) document.title = site.brand + ' – Đồ gỗ, nội thất & đồ thờ';
+  if (site.brand) document.title = site.brand + ', Đồ gỗ, nội thất & đồ thờ';
 }
 
 // ---------- Banner sản phẩm nổi bật ----------
 function heroSlide(p) {
   const i = products.indexOf(p);
-  const info = [p.material, p.size].filter(Boolean).join(' · ');
+  const info = [p.material, p.size].filter(Boolean).join(', ');
   const desc = paragraphs(p.description)[0]?.textContent || STATUS[p.status].note;
   const bg = media(p.images[0], p.name, 'hero-' + ((i % 3) + 1));
   if (bg.tagName === 'IMG' && i === 0) bg.loading = 'eager';
   return el('article', { class: 'slide' },
     el('div', { class: 'slide-bg' }, bg),
     el('div', { class: 'container slide-content' },
-      el('p', { class: 'eyebrow', text: 'Sản phẩm nổi bật · ' + CATEGORIES[p.category] }),
+      el('p', { class: 'eyebrow', text: 'Sản phẩm nổi bật, ' + CATEGORIES[p.category] }),
       el('h2', { class: 'slide-title', text: p.name || '' }),
       el('p', { class: 'slide-meta' },
         el('span', { class: 'badge badge-' + p.status, text: STATUS[p.status].label }),
@@ -582,7 +582,7 @@ addSwipe($('#pm-stage'), dir => current && current.images.length > 1 && showProd
 // Zalo không tự điền tin nhắn được, nên sao chép sẵn tên mẫu để khách dán vào
 $('#pm-zalo').addEventListener('click', () => {
   if (!current || !navigator.clipboard) return;
-  const text = `Tôi muốn hỏi về mẫu: ${current.name} – ${location.href}`;
+  const text = `Tôi muốn hỏi về mẫu: ${current.name}, ${location.href}`;
   navigator.clipboard.writeText(text)
     .then(() => toast('Đã sao chép tên mẫu, hãy dán vào khung chat Zalo.'))
     .catch(() => {});

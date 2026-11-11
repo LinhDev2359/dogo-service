@@ -27,7 +27,7 @@ collections:
             name: items
             widget: list
             label_singular: sản phẩm
-            summary: "{{fields.name}} – {{fields.status}}"
+            summary: "{{fields.name}}, {{fields.status}}"
             fields:
               - { label: Tên sản phẩm, name: name, widget: string }
               - label: Danh mục
@@ -57,7 +57,7 @@ collections:
               - { label: Kích thước, name: size, widget: string, required: false }
               - { label: Mô tả, name: description, widget: text, required: false, hint: "Để trống một dòng giữa các đoạn" }
               - { label: Giá, name: price, widget: string, required: false, hint: "Để trống sẽ hiện \"Liên hệ báo giá\". VD khác: Giá tham khảo từ ..." }
-              - { label: Nổi bật (chạy trên banner đầu trang), name: featured, widget: boolean, default: false, hint: "Nên chọn 3–5 sản phẩm có ảnh đẹp nhất. Ảnh đầu tiên được dùng làm ảnh banner." }
+              - { label: Nổi bật (chạy trên banner đầu trang), name: featured, widget: boolean, default: false, hint: "Nên chọn 3-5 sản phẩm có ảnh đẹp nhất. Ảnh đầu tiên được dùng làm ảnh banner." }
               - { label: Hiển thị trên web, name: visible, widget: boolean, default: true }
 
   - name: thong-tin

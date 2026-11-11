@@ -31,15 +31,23 @@ const specs: [string, string][] = [
   ['Tình trạng', status.label],
 ];
 
+// Khung chính sách: lấy từ Cửa hàng trong /admin/; chưa điền thì dùng câu trung tính, không hứa điều chưa xác nhận
+const policies: [string, string, string][] = [
+  ['clock', 'Thời gian làm', site.lead_time?.trim() || 'Tùy mẫu và kích thước, báo cụ thể khi tư vấn.'],
+  ['check', 'Bảo hành', site.warranty?.trim() || 'Liên hệ để biết chính sách bảo hành.'],
+  ['direction', 'Giao hàng, lắp đặt', site.delivery?.trim() || 'Giao tận nơi hoặc nhận tại cửa hàng, trao đổi khi tư vấn.'],
+  ['chat', 'Thanh toán', site.payment?.trim() || 'Trao đổi khi tư vấn.'],
+];
+
 // Ưu tiên mẫu cùng danh mục, thiếu thì bù mẫu khác cho đủ một hàng 4 thẻ
 const related = products.filter(r => r !== p && r.data.category === d.category).slice(0, 4);
 const more = [...related, ...products.filter(r => r !== p && !related.includes(r))].slice(0, 4);
 
 // Ảnh xem trước khi gửi link qua Zalo/Facebook
 const og = d.images[0] ? await getImage({ src: d.images[0], width: 1200, height: 630, fit: 'cover', format: 'jpeg' }) : null;
-const metaDesc = desc[0] || `${d.name} – ${status.label}. ${CATEGORIES[d.category]} tại ${site.brand}. Liên hệ để được tư vấn và báo giá.`;
+const metaDesc = desc[0] || `${d.name}, ${status.label}. ${CATEGORIES[d.category]} tại ${site.brand}. Liên hệ để được tư vấn và báo giá.`;
 const pageUrl = new URL(p.url, Astro.site).href;
-const zaloText = `Tôi muốn hỏi về mẫu: ${d.name} – ${pageUrl}`;
+const zaloText = `Tôi muốn hỏi về mẫu ${d.name}. Link: ${pageUrl}`;
 ---
 <Base title={d.name} description={metaDesc} image={og?.src} type="product">
   <div class="container page-head">
@@ -53,9 +61,9 @@ const zaloText = `Tôi muốn hỏi về mẫu: ${d.name} – ${pageUrl}`;
 
   <div class="container product">
     <div class:list={['pm-gallery', { single: images.length < 2 }]}>
-      <div class="pm-stage" style={`view-transition-name: img-${p.id}`} role="button" tabindex="0" aria-label="Xem ảnh lớn">
+      <div class="pm-stage" style={`view-transition-name: img-${p.id}`} role="button" tabindex="0" aria-label="Bấm để xem lớn">
         {images.map((img, i) => (
-          <Media src={img} alt={`${d.name} – ảnh ${i + 1}`} ph={p.ph} class={i === 0 ? 'is-active' : ''}
+          <Media src={img} alt={`${d.name}, ảnh ${i + 1}`} ph={p.ph} class={i === 0 ? 'is-active' : ''}
             widths={[600, 900, 1400]} sizes="(max-width: 960px) 100vw, 55vw" priority={i === 0} />
         ))}
         {d.images.length > 0 && <span class="pm-zoom" aria-hidden="true"><Icon name="search" />Bấm để xem lớn</span>}
@@ -115,12 +123,21 @@ const zaloText = `Tôi muốn hỏi về mẫu: ${d.name} – ${pageUrl}`;
         <p class="pm-note">Có thể làm theo kích thước, chất liệu và yêu cầu riêng của gia đình.</p>
       </div>
       <div class="pm-actions">
-        <a href={links.tel} class="btn"><Icon name="phone" />Gọi hỏi giá · {site.phone}</a>
+        <a href={links.tel} class="btn"><Icon name="phone" />Gọi hỏi giá: {site.phone}</a>
         <a href={links.zalo} class="btn btn-zalo" id="ask-zalo" data-text={zaloText} target="_blank" rel="noopener"><Icon name="zalo" class="ic-zalo" />Hỏi qua Zalo</a>
         {links.messenger
           ? <a href={links.messenger} class="btn btn-messenger" target="_blank" rel="noopener"><Icon name="messenger" />Messenger</a>
           : <a href={links.directions} class="btn btn-outline" target="_blank" rel="noopener"><Icon name="direction" />Chỉ đường</a>}
       </div>
+
+      <section class="pm-policies" aria-labelledby="policies-title">
+        <h2 id="policies-title" class="pm-sub">Bảo hành, giao hàng, thời gian làm</h2>
+        <ul>
+          {policies.map(([icon, title, text]) => (
+            <li><Icon name={icon} /><div><b>{title}</b><span>{text}</span></div></li>
+          ))}
+        </ul>
+      </section>
     </div>
   </div>
 
@@ -143,7 +160,7 @@ const zaloText = `Tôi muốn hỏi về mẫu: ${d.name} – ${pageUrl}`;
         <div class="lb-stage" data-backdrop>
           {d.images.map((img, i) => (
             <div class="lb-item" hidden={i !== 0} data-backdrop>
-              <Media src={img} alt={`${d.name} – ảnh ${i + 1}`} widths={[900, 1600]} sizes="92vw" />
+              <Media src={img} alt={`${d.name}, ảnh ${i + 1}`} widths={[900, 1600]} sizes="92vw" />
             </div>
           ))}
         </div>
