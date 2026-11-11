@@ -7,7 +7,7 @@ import WoodsTeaser from '../components/WoodsTeaser.astro';
 import Gallery from '../components/Gallery.astro';
 import Contact from '../components/Contact.astro';
 import Media from '../components/Media.astro';
-import { getProducts, getSite, getWoods, paragraphs } from '../lib/data';
+import { getProducts, getSite, getWoods, isPlaceholder, paragraphs } from '../lib/data';
 
 const site = await getSite();
 const products = await getProducts();
@@ -39,7 +39,7 @@ const woods = await getWoods();
       <div data-reveal>
         <p class="eyebrow">Về {site.brand}</p>
         <h2>{site.story_title}</h2>
-        <div class="story-text">{paragraphs(site.story_text).map(t => <p>{t}</p>)}</div>
+        <div class="story-text">{paragraphs(site.story_text).filter(t => !isPlaceholder(t)).map(t => <p>{t}</p>)}</div>
         <a href="#xuong" class="link-arrow">Xem cửa hàng &amp; xưởng →</a>
       </div>
     </div>
