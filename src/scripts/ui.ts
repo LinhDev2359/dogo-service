@@ -1,5 +1,5 @@
 // Hành vi chung cho mọi trang: header, menu, hiện dần khi cuộn, nút lên đầu trang
-import { $, $$, reduceMotion } from './util';
+import { $, $$, reduceMotion, toast } from './util';
 
 const header = $('#header');
 const toTop = $('#to-top');
@@ -19,10 +19,25 @@ function setMenu(open: boolean) {
   nav?.classList.toggle('open', open);
   toggle?.setAttribute('aria-expanded', String(open));
   toggle?.setAttribute('aria-label', open ? 'Đóng menu' : 'Mở menu');
+  document.documentElement.classList.toggle('menu-open', open);
 }
 toggle?.addEventListener('click', () => setMenu(!nav?.classList.contains('open')));
 nav?.addEventListener('click', e => { if ((e.target as Element).closest('a')) setMenu(false); });
 document.addEventListener('keydown', e => { if (e.key === 'Escape') setMenu(false); });
+// Chạm ra ngoài menu thì đóng menu, và không để cú chạm đó bấm nhầm vào thứ nằm dưới
+document.addEventListener('click', e => {
+  if (!nav?.classList.contains('open') || (e.target as Element).closest('#header')) return;
+  e.preventDefault();
+  e.stopPropagation();
+  setMenu(false);
+}, true);
+
+// Zalo, Messenger, bản đồ mở qua nhiều bước nên báo ngay là đã bấm
+$$<HTMLAnchorElement>('.mobile-bar a[data-open]').forEach(a => a.addEventListener('click', () => {
+  a.classList.add('is-opening');
+  toast(`Đang mở ${a.dataset.open}...`);
+  setTimeout(() => a.classList.remove('is-opening'), 2500);
+}));
 
 // Tô đậm mục menu đang xem
 const path = location.pathname;

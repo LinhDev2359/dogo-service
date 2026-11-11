@@ -16,9 +16,9 @@ const links = contactLinks(Astro.props.site);
 
 <nav class="mobile-bar" aria-label="Liên hệ nhanh">
   <a href={links.tel}><Icon name="phone" />Gọi</a>
-  <a href={links.zalo} target="_blank" rel="noopener"><Icon name="zalo" class="ic-zalo" />Zalo</a>
-  {links.messenger && <a href={links.messenger} target="_blank" rel="noopener"><Icon name="messenger" />Messenger</a>}
-  <a href={links.directions} target="_blank" rel="noopener"><Icon name="direction" />Chỉ đường</a>
+  <a href={links.zalo} data-open="Zalo"><Icon name="zalo" class="ic-zalo" />Zalo</a>
+  {links.messenger && <a href={links.messenger} data-open="Messenger"><Icon name="messenger" />Messenger</a>}
+  <a href={links.directions} data-open="bản đồ"><Icon name="direction" />Chỉ đường</a>
 </nav>
 
 <div class="toast" id="toast" role="status" aria-live="polite"></div>
